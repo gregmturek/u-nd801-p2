@@ -7,13 +7,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -115,10 +116,27 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
+            rv.setHasFixedSize(true);
+            MyAdapter adapter = new MyAdapter(new String[]{"test one", "test two", "test three", "test four", "test five" , "test six" , "test seven" , "test eight" , "test nine" , "test ten" , "test eleven" , "test twelve"});
+            rv.setAdapter(adapter);
+
+            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+            rv.setLayoutManager(llm);
+
+            return rootView;
+        }
+/*
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
+*/
     }
 
     /**
@@ -148,13 +166,14 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Most Popular";
                 case 1:
-                    return "SECTION 2";
+                    return "Top Rated";
 //                case 2:
 //                    return "SECTION 3";
             }
             return null;
         }
+
     }
 }
