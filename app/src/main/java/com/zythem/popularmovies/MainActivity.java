@@ -1,5 +1,6 @@
 package com.zythem.popularmovies;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -7,7 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -119,14 +120,22 @@ public class MainActivity extends AppCompatActivity {
 
             RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
             rv.setHasFixedSize(true);
-            MyAdapter adapter = new MyAdapter(new String[]{"test one", "test two", "test three", "test four", "test five" , "test six" , "test seven" , "test eight" , "test nine" , "test ten" , "test eleven" , "test twelve"});
+            MyAdapter adapter = new MyAdapter(getActivity(), new String[]{"We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers" , "We're the Millers"}, new String[]{"http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg" , "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg"});
             rv.setAdapter(adapter);
 
-            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-            rv.setLayoutManager(llm);
+            if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+                GridLayoutManager glm = new GridLayoutManager(getActivity(), 2);
+                rv.setLayoutManager(glm);
+            }
+            else{
+                GridLayoutManager glm = new GridLayoutManager(getActivity(), 4);
+                rv.setLayoutManager(glm);
+            }
 
             return rootView;
         }
+
+
 /*
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
