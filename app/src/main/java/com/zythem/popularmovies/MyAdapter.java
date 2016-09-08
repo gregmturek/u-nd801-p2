@@ -13,30 +13,32 @@ import com.squareup.picasso.Picasso;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context context;
-    private String[] mDataset;
-    private String[] mImageset;
+    private String[][] mMovieData;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public CardView mCardView;
-        public TextView mTextView;
+        public TextView mTextViewTitle;
         public ImageView mImageView;
+        public TextView mTextViewYear;
+        public TextView mTextViewRating;
         public MyViewHolder(View v) {
             super(v);
 
             mCardView = (CardView) v.findViewById(R.id.card_view);
-            mTextView = (TextView) v.findViewById(R.id.tv_text);
+            mTextViewTitle = (TextView) v.findViewById(R.id.tv_title);
             mImageView = (ImageView) v.findViewById(R.id.iv_image);
+            mTextViewYear = (TextView) v.findViewById(R.id.tv_year);
+            mTextViewRating = (TextView) v.findViewById(R.id.tv_rating);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context, String[] myDataset, String[] myImageset) {
+    public MyAdapter(Context context, String[][] movieData) {
         this.context = context;
-        mDataset = myDataset;
-        mImageset = myImageset;
+        mMovieData = movieData;
     }
 
     // Create new views (invoked by the layout manager)
@@ -53,12 +55,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.mTextView.setText(mDataset[position]);
-        Picasso.with(context).load(mImageset[position]).into(holder.mImageView);
+        holder.mTextViewTitle.setText(mMovieData[0][position]);
+        Picasso.with(context).load(mMovieData[1][position]).into(holder.mImageView);
+        holder.mTextViewYear.setText(mMovieData[2][position]);
+        holder.mTextViewRating.setText(mMovieData[3][position]);
     }
 
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mMovieData[0].length;
     }
 }

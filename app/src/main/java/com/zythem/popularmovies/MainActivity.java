@@ -118,9 +118,16 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+            String[][] movieData = {
+                    {"We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers" , "We're the Millers"},
+                    {"http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg" , "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg"},
+                    {"2013", "2013", "2013", "2013", "2013", "2013"},
+                    {"R", "R", "R", "R", "R", "R"}
+            };
+
             RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
             rv.setHasFixedSize(true);
-            MyAdapter adapter = new MyAdapter(getActivity(), new String[]{"We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers" , "We're the Millers"}, new String[]{"http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg" , "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg"});
+            MyAdapter adapter = new MyAdapter(getActivity(), movieData);
             rv.setAdapter(adapter);
 
             if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){

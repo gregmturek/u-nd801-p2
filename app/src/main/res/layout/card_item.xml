@@ -19,7 +19,7 @@
             android:layout_margin="8dp">
 
             <TextView
-                android:id="@+id/tv_text"
+                android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true">
@@ -29,7 +29,7 @@
                 android:id="@+id/iv_image"
                 android:layout_height="231dp"
                 android:layout_width="154dp"
-                android:layout_below="@+id/tv_text"
+                android:layout_below="@+id/tv_title"
                 android:layout_centerHorizontal="true">
             </ImageView>
 
@@ -37,7 +37,6 @@
                 android:id="@+id/tv_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2013"
                 android:layout_below="@+id/iv_image"
                 android:layout_alignStart="@+id/iv_image">
             </TextView>
@@ -46,7 +45,6 @@
                 android:id="@+id/tv_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="R"
                 android:layout_below="@+id/iv_image"
                 android:layout_alignEnd="@+id/iv_image">
             </TextView>
