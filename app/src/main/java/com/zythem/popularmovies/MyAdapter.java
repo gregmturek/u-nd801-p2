@@ -22,7 +22,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public CardView mCardView;
         public TextView mTextViewTitle;
         public ImageView mImageView;
-        public TextView mTextViewYear;
+        public TextView mTextViewDate;
         public TextView mTextViewRating;
         public MyViewHolder(View v) {
             super(v);
@@ -30,7 +30,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             mCardView = (CardView) v.findViewById(R.id.card_view);
             mTextViewTitle = (TextView) v.findViewById(R.id.tv_title);
             mImageView = (ImageView) v.findViewById(R.id.iv_image);
-            mTextViewYear = (TextView) v.findViewById(R.id.tv_date);
+            mTextViewDate = (TextView) v.findViewById(R.id.tv_date);
             mTextViewRating = (TextView) v.findViewById(R.id.tv_rating);
         }
     }
@@ -57,7 +57,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.mTextViewTitle.setText(mMovieData[position][0]);
         Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
-        holder.mTextViewYear.setText(mMovieData[position][2]);
+        holder.mTextViewDate.setText(mMovieData[position][2]);
         holder.mTextViewRating.setText(mMovieData[position][3]);
     }
 
