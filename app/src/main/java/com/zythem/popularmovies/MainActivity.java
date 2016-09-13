@@ -1,6 +1,8 @@
 package com.zythem.popularmovies;
 
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,11 +13,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,17 +66,6 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-*/
-
     }
 
 
@@ -98,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        private MyAdapter mMovieAdapter;
+        private RecyclerView mRv;
+        private GridLayoutManager mGlm;
+        private String[][] mMovieData;
+
         public PlaceholderFragment() {
         }
 
@@ -113,46 +121,163 @@ public class MainActivity extends AppCompatActivity {
             return fragment;
         }
 
+        public void showData() {
+            mMovieAdapter = new MyAdapter(getActivity(), mMovieData);
+            mRv.setAdapter(mMovieAdapter);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            FetchMovieTask movieTask = new FetchMovieTask();
+                    movieTask.execute("popularity.desc");
+//                    movieTask.execute("vote_average.desc");
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            String[][] movieData = {
-                    {"We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers", "We're the Millers" , "We're the Millers"},
-                    {"http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg", "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg" , "http://image.tmdb.org/t/p/w154//digXuLXmk88Ar23LYUQTLcz5npA.jpg"},
-                    {"2013", "2013", "2013", "2013", "2013", "2013"},
-                    {"R", "R", "R", "R", "R", "R"}
-            };
-
-            RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
-            rv.setHasFixedSize(true);
-            MyAdapter adapter = new MyAdapter(getActivity(), movieData);
-            rv.setAdapter(adapter);
+            mRv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
+            mRv.setHasFixedSize(false);
 
             if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-                GridLayoutManager glm = new GridLayoutManager(getActivity(), 2);
-                rv.setLayoutManager(glm);
+                mGlm = new GridLayoutManager(getActivity(), 2);
+                mRv.setLayoutManager(mGlm);
             }
             else{
-                GridLayoutManager glm = new GridLayoutManager(getActivity(), 4);
-                rv.setLayoutManager(glm);
+                mGlm = new GridLayoutManager(getActivity(), 4);
+                mRv.setLayoutManager(mGlm);
             }
 
             return rootView;
         }
 
+        public class FetchMovieTask extends AsyncTask<String, Void, String[][]> {
 
-/*
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+
+            private String[][] getMovieDataFromJson(String movieJsonStr)
+                    throws JSONException {
+
+                // These are the names of the JSON objects that need to be extracted.
+                final String TMDB_RESULTS = "results";
+                final String TMDB_TITLE = "original_title";
+                final String TMDB_IMAGEPATH = "poster_path";
+                final String TMDB_DATE = "release_date";
+                final String TMDB_RATING = "vote_average";
+
+                JSONObject movieJson = new JSONObject(movieJsonStr);
+                JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
+
+                String[][] resultStrs = new String[movieArray.length()][4];
+
+                for(int i = 0; i < movieArray.length(); i++) {
+                    // Get the JSON object representing an individual movie
+                    JSONObject individualMovie = movieArray.getJSONObject(i);
+
+                    resultStrs[i][0] = individualMovie.getString(TMDB_TITLE);
+                    resultStrs[i][1] = "http://image.tmdb.org/t/p/w154/" + individualMovie.getString(TMDB_IMAGEPATH);
+                    resultStrs[i][2] = individualMovie.getString(TMDB_DATE);
+                    resultStrs[i][3] = individualMovie.getString(TMDB_RATING) + "/10";
+                }
+                return resultStrs;
+            }
+
+            @Override
+            protected String[][] doInBackground(String... params) {
+
+                // These two need to be declared outside the try/catch
+                // so that they can be closed in the finally block.
+                HttpURLConnection urlConnection = null;
+                BufferedReader reader = null;
+
+                // Will contain the raw JSON response as a string.
+                String movieJsonStr = null;
+
+                try {
+                    // Construct the URL
+                    final String MOVIE_BASE_URL =
+                            "http://api.themoviedb.org/3/discover/movie?";
+                    final String APIKEY_PARAM = "api_key";
+                    final String SORTBY_PARAM = "sort_by";
+
+                    Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                            .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
+                            .appendQueryParameter(SORTBY_PARAM, params[0])
+                            .build();
+
+                    URL url = new URL(builtUri.toString());
+
+                    // Create the request and open the connection
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+
+                    // Read the input stream into a String
+                    InputStream inputStream = urlConnection.getInputStream();
+                    StringBuffer buffer = new StringBuffer();
+                    if (inputStream == null) {
+                        // Nothing to do.
+                        return null;
+                    }
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                        // But it does make debugging a *lot* easier if you print out the completed
+                        // buffer for debugging.
+                        buffer.append(line + "\n");
+                    }
+
+                    if (buffer.length() == 0) {
+                        // Stream was empty.  No point in parsing.
+                        return null;
+                    }
+                    movieJsonStr = buffer.toString();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Error ", e);
+                    // If the code didn't successfully get the data, there's no point in attempting
+                    // to parse it.
+                    return null;
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (final IOException e) {
+                            Log.e(LOG_TAG, "Error closing stream", e);
+                        }
+                    }
+                }
+
+                try {
+                    return getMovieDataFromJson(movieJsonStr);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, e.getMessage(), e);
+                    e.printStackTrace();
+                }
+
+                // This will only happen if there was an error getting or parsing.
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String[][] result) {
+                if (result != null) {
+                    mMovieData = result;
+                    // New data is back from the server.  Hooray!
+                    showData();
+                }
+            }
+
         }
-*/
+
     }
 
     /**
