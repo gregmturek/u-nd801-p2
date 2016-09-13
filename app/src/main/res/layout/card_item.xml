@@ -18,20 +18,18 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp">
 
-<!--
             <TextView
                 android:id="@+id/tv_title"
                 android:layout_width="154dp"
-                android:layout_height="wrap_content"
+                android:layout_height="231dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="center">
             </TextView>
--->
 
             <ImageView
                 android:id="@+id/iv_image"
-                android:layout_height="231dp"
                 android:layout_width="154dp"
+                android:layout_height="231dp"
                 android:layout_centerHorizontal="true">
             </ImageView>
 

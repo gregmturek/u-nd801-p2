@@ -20,7 +20,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // you provide access to all the views for a data item in a view holder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public CardView mCardView;
-//        public TextView mTextViewTitle;
+        public TextView mTextViewTitle;
         public ImageView mImageView;
         public TextView mTextViewYear;
         public TextView mTextViewRating;
@@ -28,7 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             super(v);
 
             mCardView = (CardView) v.findViewById(R.id.card_view);
-//            mTextViewTitle = (TextView) v.findViewById(R.id.tv_title);
+            mTextViewTitle = (TextView) v.findViewById(R.id.tv_title);
             mImageView = (ImageView) v.findViewById(R.id.iv_image);
             mTextViewYear = (TextView) v.findViewById(R.id.tv_date);
             mTextViewRating = (TextView) v.findViewById(R.id.tv_rating);
@@ -55,7 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-//        holder.mTextViewTitle.setText(mMovieData[position][0]);
+        holder.mTextViewTitle.setText(mMovieData[position][0]);
         Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
         holder.mTextViewYear.setText(mMovieData[position][2]);
         holder.mTextViewRating.setText(mMovieData[position][3]);
