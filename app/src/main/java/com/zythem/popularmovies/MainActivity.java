@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        private int mTabNum;
+
         private MyAdapter mMovieAdapter;
         private RecyclerView mRv;
         private GridLayoutManager mGlm;
@@ -130,8 +132,15 @@ public class MainActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             FetchMovieTask movieTask = new FetchMovieTask();
+            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
+            switch (mTabNum) {
+                case 1:
                     movieTask.execute("popularity.desc");
-//                    movieTask.execute("vote_average.desc");
+                    break;
+                case 2:
+                    movieTask.execute("vote_average.desc");
+                    break;
+            }
         }
 
         @Override
@@ -317,4 +326,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 }
