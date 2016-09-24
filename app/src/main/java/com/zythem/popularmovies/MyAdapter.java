@@ -16,6 +16,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context context;
     private String[][] mMovieData;
 
+    private static class MovieDataToPass {
+        String title;
+        String imagepath;
+        String date;
+        String rating;
+        String id;
+        String overview;
+        String imagepath2;
+    }
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -40,8 +50,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 public void onClick(View v) {
                     Intent intent = new Intent(v.getContext(), DetailActivity.class);
                     DetailActivity movieInfo = new DetailActivity();
-                    movieInfo.mId = (String) mCardView.getTag();
-                    movieInfo.mTitle = mTextViewTitle.getText().toString();
+                    MovieDataToPass data = (MovieDataToPass) mCardView.getTag();
+//                    movieInfo.mId = (String) mCardView.getTag();
+//                    movieInfo.mTitle = mTextViewTitle.getText().toString();
+                    movieInfo.mTitle = data.title;
+                    movieInfo.mImagepath = data.imagepath;
+                    movieInfo.mDate = data.date;
+                    movieInfo.mRating = data.rating;
+                    movieInfo.mId = data.id;
+                    movieInfo.mOverview = data.overview;
+                    movieInfo.mImagepath2 = data.imagepath2;
                     intent.putExtra("THE_DATA", movieInfo);
                     v.getContext().startActivity(intent);
 //                    Toast.makeText(v.getContext(), "The ID and Title are: " + theId + " and " + theTitle, Toast.LENGTH_LONG).show();
@@ -74,7 +92,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
         holder.mTextViewDate.setText(mMovieData[position][2]);
         holder.mTextViewRating.setText(mMovieData[position][3]);
-        holder.mCardView.setTag(mMovieData[position][4]);
+
+        MovieDataToPass data = new MovieDataToPass();
+        data.title = mMovieData[position][0];
+        data.imagepath = mMovieData[position][1];
+        data.date = mMovieData[position][2];
+        data.rating = mMovieData[position][3];
+        data.id = mMovieData[position][4];
+        data.overview = mMovieData[position][5];
+        data.imagepath2 = mMovieData[position][6];
+
+        holder.mCardView.setTag(data);
     }
 
     @Override

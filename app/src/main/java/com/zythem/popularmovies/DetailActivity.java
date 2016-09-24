@@ -8,8 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 public class DetailActivity extends AppCompatActivity implements Parcelable {
-    String mId;
     String mTitle;
+    String mImagepath;
+    String mDate;
+    String mRating;
+    String mId;
+    String mOverview;
+    String mImagepath2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +51,26 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mId);
         dest.writeString(this.mTitle);
+        dest.writeString(this.mImagepath);
+        dest.writeString(this.mDate);
+        dest.writeString(this.mRating);
+        dest.writeString(this.mId);
+        dest.writeString(this.mOverview);
+        dest.writeString(this.mImagepath2);
     }
 
     public DetailActivity() {
     }
 
     protected DetailActivity(Parcel in) {
-        this.mId = in.readString();
         this.mTitle = in.readString();
+        this.mImagepath = in.readString();
+        this.mDate = in.readString();
+        this.mRating = in.readString();
+        this.mId = in.readString();
+        this.mOverview = in.readString();
+        this.mImagepath2 = in.readString();
     }
 
     public static final Parcelable.Creator<DetailActivity> CREATOR = new Parcelable.Creator<DetailActivity>() {

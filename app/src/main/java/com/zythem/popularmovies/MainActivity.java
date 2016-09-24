@@ -178,11 +178,13 @@ public class MainActivity extends AppCompatActivity {
                 final String TMDB_DATE = "release_date";
                 final String TMDB_RATING = "vote_average";
                 final String TMDB_ID = "id";
+                final String TMDB_OVERVIEW = "overview";
+                final String TMDB_IMAGEPATH2 = "backdrop_path";
 
                 JSONObject movieJson = new JSONObject(movieJsonStr);
                 JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
 
-                String[][] resultStrs = new String[movieArray.length()][5];
+                String[][] resultStrs = new String[movieArray.length()][7];
 
                 for(int i = 0; i < movieArray.length(); i++) {
                     // Get the JSON object representing an individual movie
@@ -193,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
                     resultStrs[i][2] = individualMovie.getString(TMDB_DATE);
                     resultStrs[i][3] = individualMovie.getString(TMDB_RATING) + "/10";
                     resultStrs[i][4] = individualMovie.getString(TMDB_ID);
+                    resultStrs[i][5] = individualMovie.getString(TMDB_OVERVIEW);
+                    resultStrs[i][6] = "http://image.tmdb.org/t/p/w300/" + individualMovie.getString(TMDB_IMAGEPATH2);
                 }
                 return resultStrs;
             }
