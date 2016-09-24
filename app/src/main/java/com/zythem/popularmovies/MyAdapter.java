@@ -1,6 +1,7 @@
 package com.zythem.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -24,6 +26,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public ImageView mImageView;
         public TextView mTextViewDate;
         public TextView mTextViewRating;
+
         public MyViewHolder(View v) {
             super(v);
 
@@ -32,6 +35,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             mImageView = (ImageView) v.findViewById(R.id.iv_image);
             mTextViewDate = (TextView) v.findViewById(R.id.tv_date);
             mTextViewRating = (TextView) v.findViewById(R.id.tv_rating);
+
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    String theId = mTextViewTitle.getText().toString();
+                    String theId = (String) mCardView.getTag();
+                    Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                    intent.putExtra("THE_ID", theId);
+                    v.getContext().startActivity(intent);
+                    Toast.makeText(v.getContext(), "The ID is: " + theId , Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -59,6 +74,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
         holder.mTextViewDate.setText(mMovieData[position][2]);
         holder.mTextViewRating.setText(mMovieData[position][3]);
+        holder.mCardView.setTag(mMovieData[position][4]);
     }
 
     @Override
