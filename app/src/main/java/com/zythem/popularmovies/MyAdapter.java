@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -39,12 +38,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    String theId = mTextViewTitle.getText().toString();
-                    String theId = (String) mCardView.getTag();
                     Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                    intent.putExtra("THE_ID", theId);
+                    DetailActivity movieInfo = new DetailActivity();
+                    movieInfo.mId = (String) mCardView.getTag();
+                    movieInfo.mTitle = mTextViewTitle.getText().toString();
+                    intent.putExtra("THE_DATA", movieInfo);
                     v.getContext().startActivity(intent);
-                    Toast.makeText(v.getContext(), "The ID is: " + theId , Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(v.getContext(), "The ID and Title are: " + theId + " and " + theTitle, Toast.LENGTH_LONG).show();
                 }
             });
         }

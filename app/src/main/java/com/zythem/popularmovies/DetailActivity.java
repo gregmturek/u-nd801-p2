@@ -5,9 +5,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 public class DetailActivity extends AppCompatActivity implements Parcelable {
     String mId;
+    String mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,12 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
         });
 */
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        DetailActivity movieInfo = (DetailActivity) getIntent().getParcelableExtra("THE_DATA");
+//        mId = getIntent().getStringExtra("THE_ID");
+//        mTitle = getIntent().getStringExtra("THE_TITLE");
+        Toast.makeText(toolbar.getContext(), "The ID and Title are: " + movieInfo.mId + " and " + movieInfo.mTitle, Toast.LENGTH_LONG).show();
+        setTitle(movieInfo.mTitle);
     }
 
 
@@ -38,6 +46,7 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mId);
+        dest.writeString(this.mTitle);
     }
 
     public DetailActivity() {
@@ -45,6 +54,7 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
 
     protected DetailActivity(Parcel in) {
         this.mId = in.readString();
+        this.mTitle = in.readString();
     }
 
     public static final Parcelable.Creator<DetailActivity> CREATOR = new Parcelable.Creator<DetailActivity>() {
