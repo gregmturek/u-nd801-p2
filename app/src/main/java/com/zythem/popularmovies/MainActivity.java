@@ -191,12 +191,12 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject individualMovie = movieArray.getJSONObject(i);
 
                     resultStrs[i][0] = individualMovie.getString(TMDB_TITLE);
-                    resultStrs[i][1] = "http://image.tmdb.org/t/p/w154/" + individualMovie.getString(TMDB_IMAGEPATH);
+                    resultStrs[i][1] = "http://image.tmdb.org/t/p/w780/" + individualMovie.getString(TMDB_IMAGEPATH);
                     resultStrs[i][2] = individualMovie.getString(TMDB_DATE);
                     resultStrs[i][3] = individualMovie.getString(TMDB_RATING) + "/10";
                     resultStrs[i][4] = individualMovie.getString(TMDB_ID);
                     resultStrs[i][5] = individualMovie.getString(TMDB_OVERVIEW);
-                    resultStrs[i][6] = "http://image.tmdb.org/t/p/w300/" + individualMovie.getString(TMDB_IMAGEPATH2);
+                    resultStrs[i][6] = "http://image.tmdb.org/t/p/w1280/" + individualMovie.getString(TMDB_IMAGEPATH2);
                 }
                 return resultStrs;
             }

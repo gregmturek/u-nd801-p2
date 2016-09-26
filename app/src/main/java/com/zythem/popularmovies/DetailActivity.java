@@ -5,7 +5,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import static com.zythem.popularmovies.R.layout.activity_detail;
 
 public class DetailActivity extends AppCompatActivity implements Parcelable {
     String mTitle;
@@ -20,7 +25,7 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -34,13 +39,26 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
             }
         });
 */
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         DetailActivity movieInfo = (DetailActivity) getIntent().getParcelableExtra("THE_DATA");
-//        mId = getIntent().getStringExtra("THE_ID");
-//        mTitle = getIntent().getStringExtra("THE_TITLE");
-        Toast.makeText(toolbar.getContext(), "The ID and Title are: " + movieInfo.mId + " and " + movieInfo.mTitle, Toast.LENGTH_LONG).show();
+
         setTitle(movieInfo.mTitle);
+
+        ImageView ivImagepath2 = (ImageView) findViewById(R.id.detail_imagepath2);
+        Picasso.with(DetailActivity.this).load(movieInfo.mImagepath2).into(ivImagepath2);
+
+        ImageView ivImagepath = (ImageView) findViewById(R.id.detail_imagepath);
+        Picasso.with(DetailActivity.this).load(movieInfo.mImagepath).into(ivImagepath);
+
+        TextView tvDate = (TextView) findViewById(R.id.detail_date);
+        tvDate.setText(movieInfo.mDate);
+
+        TextView tvRating = (TextView) findViewById(R.id.detail_rating);
+        tvRating.setText(movieInfo.mRating);
+
+        TextView tvOverview = (TextView) findViewById(R.id.detail_overview);
+        tvOverview.setText(movieInfo.mOverview);
     }
 
 
