@@ -135,10 +135,10 @@ public class MainActivity extends AppCompatActivity {
             mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
             switch (mTabNum) {
                 case 1:
-                    movieTask.execute("popularity.desc");
+                    movieTask.execute("popular");
                     break;
                 case 2:
-                    movieTask.execute("vote_average.desc");
+                    movieTask.execute("top_rated");
                     break;
             }
         }
@@ -215,13 +215,11 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     // Construct the URL
                     final String MOVIE_BASE_URL =
-                            "http://api.themoviedb.org/3/discover/movie?";
+                            "http://api.themoviedb.org/3/movie/" + params[0] + "?";
                     final String APIKEY_PARAM = "api_key";
-                    final String SORTBY_PARAM = "sort_by";
 
                     Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                             .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
-                            .appendQueryParameter(SORTBY_PARAM, params[0])
                             .build();
 
                     URL url = new URL(builtUri.toString());
