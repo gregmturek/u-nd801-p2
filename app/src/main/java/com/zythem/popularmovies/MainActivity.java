@@ -29,6 +29,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.zythem.popularmovies.R.id.container;
+
 public class MainActivity extends AppCompatActivity {
 
     /**
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (ViewPager) findViewById(container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -130,16 +132,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
+            int pages = 3;
+
             FetchMovieTask movieTask = new FetchMovieTask();
             mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
             switch (mTabNum) {
                 case 1:
-                    movieTask.execute("popular");
+                    movieTask.execute("popular", String.valueOf(pages));
                     break;
                 case 2:
-                    movieTask.execute("top_rated");
+                    movieTask.execute("top_rated", String.valueOf(pages));
                     break;
-            }
+                }
         }
 
         @Override
@@ -167,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
             private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-            private String[][] getMovieDataFromJson(String movieJsonStr)
+            private String[][] getMovieDataFromJson(String[] movieJsonStrs)
                     throws JSONException {
 
                 // These are the names of the JSON objects that need to be extracted.
@@ -180,22 +185,33 @@ public class MainActivity extends AppCompatActivity {
                 final String TMDB_OVERVIEW = "overview";
                 final String TMDB_IMAGEPATH2 = "backdrop_path";
 
-                JSONObject movieJson = new JSONObject(movieJsonStr);
-                JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
+                int movieJsonStrsLength = movieJsonStrs.length;
 
-                String[][] resultStrs = new String[movieArray.length()][7];
+                JSONObject[] movieJson = new JSONObject[movieJsonStrsLength];
+                JSONArray[] movieArray = new JSONArray[movieJsonStrsLength];
 
-                for(int i = 0; i < movieArray.length(); i++) {
-                    // Get the JSON object representing an individual movie
-                    JSONObject individualMovie = movieArray.getJSONObject(i);
+                for(int j = 0; j < movieJsonStrsLength; j++) {
+                    movieJson[j] = new JSONObject(movieJsonStrs[j]);
+                    movieArray[j] = movieJson[j].getJSONArray(TMDB_RESULTS);
+                }
 
-                    resultStrs[i][0] = individualMovie.getString(TMDB_TITLE);
-                    resultStrs[i][1] = "http://image.tmdb.org/t/p/w780/" + individualMovie.getString(TMDB_IMAGEPATH);
-                    resultStrs[i][2] = individualMovie.getString(TMDB_DATE);
-                    resultStrs[i][3] = individualMovie.getString(TMDB_RATING) + "/10";
-                    resultStrs[i][4] = individualMovie.getString(TMDB_ID);
-                    resultStrs[i][5] = individualMovie.getString(TMDB_OVERVIEW);
-                    resultStrs[i][6] = "http://image.tmdb.org/t/p/w1280/" + individualMovie.getString(TMDB_IMAGEPATH2);
+                int movieArrayLength = movieArray[0].length();
+
+                String[][] resultStrs = new String[movieJsonStrsLength*movieArrayLength][7];
+
+                for(int j = 0; j < movieJsonStrsLength; j++) {
+                    for (int i = 0; i < movieArrayLength; i++) {
+                        // Get the JSON object representing an individual movie
+                        JSONObject individualMovie = movieArray[j].getJSONObject(i);
+
+                        resultStrs[(j*movieArrayLength)+i][0] = individualMovie.getString(TMDB_TITLE);
+                        resultStrs[(j*movieArrayLength)+i][1] = "http://image.tmdb.org/t/p/w780/" + individualMovie.getString(TMDB_IMAGEPATH);
+                        resultStrs[(j*movieArrayLength)+i][2] = individualMovie.getString(TMDB_DATE);
+                        resultStrs[(j*movieArrayLength)+i][3] = individualMovie.getString(TMDB_RATING) + "/10";
+                        resultStrs[(j*movieArrayLength)+i][4] = individualMovie.getString(TMDB_ID);
+                        resultStrs[(j*movieArrayLength)+i][5] = individualMovie.getString(TMDB_OVERVIEW);
+                        resultStrs[(j*movieArrayLength)+i][6] = "http://image.tmdb.org/t/p/w1280/" + individualMovie.getString(TMDB_IMAGEPATH2);
+                    }
                 }
                 return resultStrs;
             }
@@ -209,67 +225,71 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader reader = null;
 
                 // Will contain the raw JSON response as a string.
-                String movieJsonStr = null;
+                String[] movieJsonStrs = new String[Integer.parseInt(params[1])];
 
-                try {
-                    // Construct the URL
-                    final String MOVIE_BASE_URL =
-                            "http://api.themoviedb.org/3/movie/" + params[0] + "?";
-                    final String APIKEY_PARAM = "api_key";
+                for(int i=0; i<Integer.parseInt(params[1]); i++) {
+                    try {
+                        // Construct the URL
+                        final String MOVIE_BASE_URL =
+                                "http://api.themoviedb.org/3/movie/" + params[0] + "?";
+                        final String APIKEY_PARAM = "api_key";
+                        final String PAGE_PARAM = "page";
 
-                    Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                            .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
-                            .build();
+                        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                                .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
+                                .appendQueryParameter(PAGE_PARAM, Integer.toString(i+1))
+                                .build();
 
-                    URL url = new URL(builtUri.toString());
+                        URL url = new URL(builtUri.toString());
 
-                    // Create the request and open the connection
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.connect();
+                        // Create the request and open the connection
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.connect();
 
-                    // Read the input stream into a String
-                    InputStream inputStream = urlConnection.getInputStream();
-                    StringBuffer buffer = new StringBuffer();
-                    if (inputStream == null) {
-                        // Nothing to do.
+                        // Read the input stream into a String
+                        InputStream inputStream = urlConnection.getInputStream();
+                        StringBuffer buffer = new StringBuffer();
+                        if (inputStream == null) {
+                            // Nothing to do.
+                            return null;
+                        }
+                        reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                            // But it does make debugging a *lot* easier if you print out the completed
+                            // buffer for debugging.
+                            buffer.append(line + "\n");
+                        }
+
+                        if (buffer.length() == 0) {
+                            // Stream was empty.  No point in parsing.
+                            return null;
+                        }
+                        movieJsonStrs[i] = buffer.toString();
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "Error ", e);
+                        // If the code didn't successfully get the data, there's no point in attempting
+                        // to parse it.
                         return null;
-                    }
-                    reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                        // But it does make debugging a *lot* easier if you print out the completed
-                        // buffer for debugging.
-                        buffer.append(line + "\n");
-                    }
-
-                    if (buffer.length() == 0) {
-                        // Stream was empty.  No point in parsing.
-                        return null;
-                    }
-                    movieJsonStr = buffer.toString();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Error ", e);
-                    // If the code didn't successfully get the data, there's no point in attempting
-                    // to parse it.
-                    return null;
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (final IOException e) {
-                            Log.e(LOG_TAG, "Error closing stream", e);
+                    } finally {
+                        if (urlConnection != null) {
+                            urlConnection.disconnect();
+                        }
+                        if (reader != null) {
+                            try {
+                                reader.close();
+                            } catch (final IOException e) {
+                                Log.e(LOG_TAG, "Error closing stream", e);
+                            }
                         }
                     }
                 }
 
                 try {
-                    return getMovieDataFromJson(movieJsonStr);
+                    return getMovieDataFromJson(movieJsonStrs);
                 } catch (JSONException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
                     e.printStackTrace();
