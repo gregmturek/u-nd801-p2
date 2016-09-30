@@ -15,16 +15,14 @@
 
         <ImageView
             android:id="@+id/detail_imagepath"
-            android:layout_marginTop="8dp"
-            android:layout_width="200dp"
-            android:layout_height="300dp"/>
+            android:layout_width="183dp"
+            android:layout_height="275dp"/>
 
         <TextView
             android:id="@+id/detail_date_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/detail_imagepath"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             android:textSize="22sp"
             android:text="Release Date"/>
@@ -43,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/detail_imagepath"
             android:layout_below="@+id/detail_date"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             android:textSize="22sp"
             android:text="Rating"/>
@@ -61,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/detail_imagepath"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:textSize="22sp"
             android:text="Synopsis"/>
 

@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 mRv.setLayoutManager(mGlm);
             }
             else{
-                mGlm = new GridLayoutManager(getActivity(), 4);
+                mGlm = new GridLayoutManager(getActivity(), 3);
                 mRv.setLayoutManager(mGlm);
             }
 
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject individualMovie = movieArray[j].getJSONObject(i);
 
                         resultStrs[(j*movieArrayLength)+i][0] = individualMovie.getString(TMDB_TITLE);
-                        resultStrs[(j*movieArrayLength)+i][1] = "http://image.tmdb.org/t/p/w780/" + individualMovie.getString(TMDB_IMAGEPATH);
+                        resultStrs[(j*movieArrayLength)+i][1] = "http://image.tmdb.org/t/p/w342/" + individualMovie.getString(TMDB_IMAGEPATH);
                         resultStrs[(j*movieArrayLength)+i][2] = individualMovie.getString(TMDB_DATE);
                         resultStrs[(j*movieArrayLength)+i][3] = individualMovie.getString(TMDB_RATING) + "/10";
                         resultStrs[(j*movieArrayLength)+i][4] = individualMovie.getString(TMDB_ID);
