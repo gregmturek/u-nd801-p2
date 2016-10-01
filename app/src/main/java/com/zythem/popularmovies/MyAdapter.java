@@ -2,8 +2,10 @@ package com.zythem.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,12 +84,82 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_item, parent, false);
         // set the view's size, margins, paddings and layout parameters
+
+/*
+        int cardsInRowPortrait = 2;
+        int cardsInRowLandscape = 3;
+        int cardsInRow;
+
+        if(parent.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            cardsInRow = cardsInRowPortrait;
+        }
+        else{
+            cardsInRow = cardsInRowLandscape;
+        }
+        Configuration config = parent.getContext().getResources().getConfiguration();
+        int screenWidthDp = config.screenWidthDp;
+//            int screenHightDp = config.screenHeightDp;
+
+        int cardImageWidth = screenWidthDp/cardsInRow;
+        int cardImageHeight = (int) Math.round(cardImageWidth * 1.5);
+
+        //convert dp to pixels
+        cardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, cardImageWidth, parent.getContext().getResources().getDisplayMetrics());
+        cardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, cardImageHeight, parent.getContext().getResources().getDisplayMetrics());
+
+
+
+
+//        v.setMinimumWidth(cardImageWidth);
+//        v.setMinimumHeight(cardImageHeight);
+
+        v.setLayoutParams(new RelativeLayout.LayoutParams(cardImageHeight, cardImageWidth));
+*/
+
+
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+
+        int cardsInRowPortrait = 2;
+        int cardsInRowLandscape = 4;
+        int cardsInRow;
+
+        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            cardsInRow = cardsInRowPortrait;
+        }
+        else{
+            cardsInRow = cardsInRowLandscape;
+        }
+        Configuration config = context.getResources().getConfiguration();
+        int screenWidthDp = config.screenWidthDp;
+//            int screenHightDp = config.screenHeightDp;
+
+        int cardImageWidth = (screenWidthDp - (16 * cardsInRow) - (8 * (cardsInRow - 1))) / cardsInRow;
+        int cardImageHeight = (int) Math.round(cardImageWidth * 1.5);
+
+//        Toast.makeText(context, "screenWidthDp and cardImageWidth (in dp): " + screenWidthDp + " and " + cardImageWidth, Toast.LENGTH_SHORT).show();
+
+
+        //convert dp to pixels
+        cardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, cardImageWidth, context.getResources().getDisplayMetrics());
+        cardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, cardImageHeight, context.getResources().getDisplayMetrics());
+
+        holder.mTextViewTitle.getLayoutParams().width = cardImageWidth;
+        holder.mTextViewTitle.getLayoutParams().height = cardImageHeight;
+        holder.mImageView.getLayoutParams().width = cardImageWidth;
+        holder.mImageView.getLayoutParams().height = cardImageHeight;
+
+
+//        v.setMinimumWidth(cardImageWidth);
+//        v.setMinimumHeight(cardImageHeight);
+
+//        v.setLayoutParams(new RelativeLayout.LayoutParams(cardImageHeight, cardImageWidth));
+
+
         holder.mTextViewTitle.setText(mMovieData[position][0]);
         Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
         holder.mTextViewDate.setText(mMovieData[position][2]);

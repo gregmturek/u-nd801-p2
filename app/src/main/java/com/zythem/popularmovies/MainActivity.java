@@ -150,23 +150,29 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            int cardsInRowPortrait = 2;
+            int cardsInRowLandscape = 4;
+            int cardsInRow;
+
+            if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+                cardsInRow = cardsInRowPortrait;
+            }
+            else{
+                cardsInRow = cardsInRowLandscape;
+            }
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             mRv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
-            mRv.setHasFixedSize(false);
+            mRv.setHasFixedSize(true);
 
-            if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-                mGlm = new GridLayoutManager(getActivity(), 2);
-                mRv.setLayoutManager(mGlm);
-            }
-            else{
-                mGlm = new GridLayoutManager(getActivity(), 3);
-                mRv.setLayoutManager(mGlm);
-            }
+            mGlm = new GridLayoutManager(getActivity(), cardsInRow);
+            mRv.setLayoutManager(mGlm);
 
             return rootView;
         }
+
+
 
         public class FetchMovieTask extends AsyncTask<String, Void, String[][]> {
 

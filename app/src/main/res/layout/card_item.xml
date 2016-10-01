@@ -20,16 +20,16 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="150dp"
-                android:layout_height="225dp"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="center">
             </TextView>
 
             <ImageView
                 android:id="@+id/iv_image"
-                android:layout_width="150dp"
-                android:layout_height="225dp"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
                 android:layout_centerHorizontal="true">
             </ImageView>
 
