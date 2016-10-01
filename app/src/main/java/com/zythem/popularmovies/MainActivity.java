@@ -150,8 +150,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            int cardsInRowPortrait = 2;
-            int cardsInRowLandscape = 4;
+            int cardsInRowPortrait = getResources().getInteger(R.integer.cards_in_row_portrait);
+            int cardsInRowLandscape = getResources().getInteger(R.integer.cards_in_row_landscape);
             int cardsInRow;
 
             if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){

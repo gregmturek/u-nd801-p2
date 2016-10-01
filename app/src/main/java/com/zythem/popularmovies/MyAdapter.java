@@ -79,8 +79,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mMovieData = movieData;
 
 
-        int cardsInRowPortrait = 2;
-        int cardsInRowLandscape = 4;
+        int cardsInRowPortrait = context.getResources().getInteger(R.integer.cards_in_row_portrait);
+        int cardsInRowLandscape = context.getResources().getInteger(R.integer.cards_in_row_landscape);
         int cardsInRow;
 
         if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
@@ -125,7 +125,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.mTextViewTitle.getLayoutParams().height = mCardImageHeight;
         holder.mImageView.getLayoutParams().width = mCardImageWidth;
         holder.mImageView.getLayoutParams().height = mCardImageHeight;
-        
+
         holder.mTextViewTitle.setText(mMovieData[position][0]);
         Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
         holder.mTextViewDate.setText(mMovieData[position][2]);
