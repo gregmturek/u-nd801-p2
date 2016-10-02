@@ -91,7 +91,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
         Configuration config = context.getResources().getConfiguration();
         int screenWidthDp = config.screenWidthDp;
-//            int screenHightDp = config.screenHeightDp;
 
         mCardImageWidth = (screenWidthDp - (16 * cardsInRow) - (8 * (cardsInRow - 1))) / cardsInRow;
         mCardImageHeight = (int) Math.round(mCardImageWidth * 1.5);

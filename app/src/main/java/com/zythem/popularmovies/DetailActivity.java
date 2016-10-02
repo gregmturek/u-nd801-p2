@@ -1,10 +1,14 @@
 package com.zythem.popularmovies;
 
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +33,25 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        int divisor;
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            divisor = 2;
+        }
+        else{
+            divisor = 1;
+        }
+
+        Configuration config = getResources().getConfiguration();
+        int screenWidthDp = config.screenWidthDp;
+        int screenHeightDp = config.screenHeightDp;
+
+        int appbarImageHeight = screenHeightDp / divisor;
+
+        appbarImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, appbarImageHeight, getResources().getDisplayMetrics());
+
+        AppBarLayout appbar = (AppBarLayout) findViewById(R.id.app_bar);
+        appbar.getLayoutParams().height = appbarImageHeight;
+
 /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +72,20 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
         Picasso.with(DetailActivity.this).load(movieInfo.mImagepath2).into(ivImagepath2);
 
         ImageView ivImagepath = (ImageView) findViewById(R.id.detail_imagepath);
+        int ivImagepathHeight = (screenHeightDp / divisor) - 16;
+        ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ivImagepathHeight, getResources().getDisplayMetrics());
+        int actionBarHeight = 0;
+        if(divisor == 1) {
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{R.attr.actionBarSize}
+            );
+            actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            ivImagepathHeight -= actionBarHeight;
+        }
+        int ivImagepathWidth = (int) Math.round(ivImagepathHeight / 1.5);
+        ivImagepath.getLayoutParams().width = ivImagepathWidth;
+        ivImagepath.getLayoutParams().height = ivImagepathHeight;
         Picasso.with(DetailActivity.this).load(movieInfo.mImagepath).into(ivImagepath);
 
         TextView tvDate = (TextView) findViewById(R.id.detail_date);
