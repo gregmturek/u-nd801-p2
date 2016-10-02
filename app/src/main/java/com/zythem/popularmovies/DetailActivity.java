@@ -62,7 +62,7 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
             }
         });
 */
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         DetailActivity movieInfo = (DetailActivity) getIntent().getParcelableExtra("THE_DATA");
 
