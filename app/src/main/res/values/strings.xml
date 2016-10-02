@@ -13,14 +13,20 @@
     <string name="pref_title_number_of_movies">Number of movies in the list</string>
     <string name="number_of_movies_to_list_as_pages_default">1</string>
     <string-array name="pref_number_of_movies_list_titles">
-        <item>100</item>
-        <item>60</item>
         <item>20</item>
+        <item>40</item>
+        <item>80</item>
+        <item>160</item>
+        <item>320</item>
+        <item>640</item>
     </string-array>
     <string-array name="pref_number_of_movies_list_values">
-        <item>5</item>
-        <item>3</item>
         <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
     </string-array>
 
 
