@@ -1,9 +1,12 @@
 package com.zythem.popularmovies;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +18,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -68,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -85,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-*/
 
     /**
      * A placeholder fragment containing a simple view.
@@ -133,18 +137,23 @@ public class MainActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            int pages = 3;
-
             FetchMovieTask movieTask = new FetchMovieTask();
+
+            SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
+            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
+            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
+
+//            Toast.makeText(getContext(), "# of pages from shared prefs: " + pages, Toast.LENGTH_LONG).show();
+
             mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
             switch (mTabNum) {
                 case 1:
-                    movieTask.execute("popular", String.valueOf(pages));
+                    movieTask.execute("popular", pages);
                     break;
                 case 2:
-                    movieTask.execute("top_rated", String.valueOf(pages));
+                    movieTask.execute("top_rated", pages);
                     break;
-                }
+            }
         }
 
         @Override
