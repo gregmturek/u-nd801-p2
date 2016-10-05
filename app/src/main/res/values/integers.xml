@@ -2,4 +2,8 @@
 <resources>
     <integer name="cards_in_row_portrait">2</integer>
     <integer name="cards_in_row_landscape">4</integer>
+
+    <integer name="title_shadow_Dx">0</integer>
+    <integer name="title_shadow_Dy">0</integer>
+    <integer name="title_shadow_Radius">6</integer>
 </resources>

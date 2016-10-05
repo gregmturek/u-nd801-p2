@@ -47,31 +47,29 @@ public class MainActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        ViewPager viewPager = (ViewPager) findViewById(container);
+        viewPager.setAdapter(sectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class tabFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -117,15 +115,15 @@ public class MainActivity extends AppCompatActivity {
         private GridLayoutManager mGlm;
         private String[][] mMovieData;
 
-        public PlaceholderFragment() {
+        public tabFragment() {
         }
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static tabFragment newInstance(int sectionNumber) {
+            tabFragment fragment = new tabFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -146,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
             String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
             String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
-
-//            Toast.makeText(getContext(), "# of pages from shared prefs: " + pages, Toast.LENGTH_LONG).show();
 
             mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
             switch (mTabNum) {
@@ -266,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Read the input stream into a String
                         InputStream inputStream = urlConnection.getInputStream();
-                        StringBuffer buffer = new StringBuffer();
+                        StringBuilder buffer = new StringBuilder();
                         if (inputStream == null) {
                             // Nothing to do.
                             return null;
@@ -278,7 +274,8 @@ public class MainActivity extends AppCompatActivity {
                             // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                             // But it does make debugging a *lot* easier if you print out the completed
                             // buffer for debugging.
-                            buffer.append(line + "\n");
+                            buffer.append(line);
+                            buffer.append("\n");
                         }
 
                         if (buffer.length() == 0) {
@@ -335,15 +332,15 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            // Return a tabFragment (defined as a static inner class below).
+            return tabFragment.newInstance(position + 1);
         }
 
         @Override
@@ -360,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return "Top Rated";
 //                case 2:
-//                    return "SECTION 3";
+//                    return "Favorites";
             }
             return null;
         }

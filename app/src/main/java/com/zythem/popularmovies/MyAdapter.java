@@ -14,18 +14,18 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private Context context;
+class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    private Context mContext;
     private String[][] mMovieData;
 
     private static class MovieDataToPass {
-        String title;
-        String imagepath;
-        String date;
-        String rating;
-        String id;
-        String overview;
-        String imagepath2;
+        String mTitle;
+        String mImagepath;
+        String mDate;
+        String mRating;
+        String mId;
+        String mOverview;
+        String mImagepath2;
     }
 
     private int mCardImageWidth;
@@ -34,14 +34,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public CardView mCardView;
-        public TextView mTextViewTitle;
-        public ImageView mImageView;
-        public TextView mTextViewDate;
-        public TextView mTextViewRating;
+    static class MyViewHolder extends RecyclerView.ViewHolder {
+        CardView mCardView;
+        TextView mTextViewTitle;
+        ImageView mImageView;
+        TextView mTextViewDate;
+        TextView mTextViewRating;
 
-        public MyViewHolder(View v) {
+        MyViewHolder(View v) {
             super(v);
 
             mCardView = (CardView) v.findViewById(R.id.card_view);
@@ -56,28 +56,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     Intent intent = new Intent(v.getContext(), DetailActivity.class);
                     DetailActivity movieInfo = new DetailActivity();
                     MovieDataToPass data = (MovieDataToPass) mCardView.getTag();
-//                    movieInfo.mId = (String) mCardView.getTag();
-//                    movieInfo.mTitle = mTextViewTitle.getText().toString();
-                    movieInfo.mTitle = data.title;
-                    movieInfo.mImagepath = data.imagepath;
-                    movieInfo.mDate = data.date;
-                    movieInfo.mRating = data.rating;
-                    movieInfo.mId = data.id;
-                    movieInfo.mOverview = data.overview;
-                    movieInfo.mImagepath2 = data.imagepath2;
+                    movieInfo.mTitle = data.mTitle;
+                    movieInfo.mImagepath = data.mImagepath;
+                    movieInfo.mDate = data.mDate;
+                    movieInfo.mRating = data.mRating;
+                    movieInfo.mId = data.mId;
+                    movieInfo.mOverview = data.mOverview;
+                    movieInfo.mImagepath2 = data.mImagepath2;
                     intent.putExtra("THE_DATA", movieInfo);
                     v.getContext().startActivity(intent);
-//                    Toast.makeText(v.getContext(), "The ID and Title are: " + theId + " and " + theTitle, Toast.LENGTH_LONG).show();
                 }
             });
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context, String[][] movieData) {
-        this.context = context;
+    MyAdapter(Context context, String[][] movieData) {
+        this.mContext = context;
         mMovieData = movieData;
-
 
         int cardsInRowPortrait = context.getResources().getInteger(R.integer.cards_in_row_portrait);
         int cardsInRowLandscape = context.getResources().getInteger(R.integer.cards_in_row_landscape);
@@ -95,26 +91,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mCardImageWidth = (screenWidthDp - (16 * cardsInRow) - (8 * (cardsInRow - 1))) / cardsInRow;
         mCardImageHeight = (int) Math.round(mCardImageWidth * 1.5);
 
-//        Toast.makeText(context, "screenWidthDp and cardImageWidth (in dp): " + screenWidthDp + " and " + cardImageWidth, Toast.LENGTH_SHORT).show();
-
-
         //convert dp to pixels
         mCardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageWidth, context.getResources().getDisplayMetrics());
         mCardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageHeight, context.getResources().getDisplayMetrics());
-
-
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_item, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
+        return new MyViewHolder(v);
     }
 
     @Override
@@ -126,18 +115,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.mImageView.getLayoutParams().height = mCardImageHeight;
 
         holder.mTextViewTitle.setText(mMovieData[position][0]);
-        Picasso.with(context).load(mMovieData[position][1]).into(holder.mImageView);
+        Picasso.with(mContext).load(mMovieData[position][1]).into(holder.mImageView);
         holder.mTextViewDate.setText(mMovieData[position][2]);
         holder.mTextViewRating.setText(mMovieData[position][3]);
 
         MovieDataToPass data = new MovieDataToPass();
-        data.title = mMovieData[position][0];
-        data.imagepath = mMovieData[position][1];
-        data.date = mMovieData[position][2];
-        data.rating = mMovieData[position][3];
-        data.id = mMovieData[position][4];
-        data.overview = mMovieData[position][5];
-        data.imagepath2 = mMovieData[position][6];
+        data.mTitle = mMovieData[position][0];
+        data.mImagepath = mMovieData[position][1];
+        data.mDate = mMovieData[position][2];
+        data.mRating = mMovieData[position][3];
+        data.mId = mMovieData[position][4];
+        data.mOverview = mMovieData[position][5];
+        data.mImagepath2 = mMovieData[position][6];
 
         holder.mCardView.setTag(data);
     }

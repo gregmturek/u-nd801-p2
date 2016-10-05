@@ -11,21 +11,22 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="@dimen/normal_layout_margin">
 
         <ImageView
+            android:contentDescription="@string/cd_movie_poster"
             android:id="@+id/detail_imagepath"
-            android:layout_width="183dp"
-            android:layout_height="275dp"/>
+            android:layout_width="@dimen/poster_layout_width"
+            android:layout_height="@dimen/poster_layout_height"/>
 
         <TextView
             android:id="@+id/detail_date_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/detail_imagepath"
-            android:layout_marginStart="8dp"
-            android:textSize="22sp"
-            android:text="Release Date"/>
+            android:layout_marginStart="@dimen/normal_layout_margin"
+            android:textSize="@dimen/heading_text_size"
+            android:text="@string/release_date"/>
 
         <TextView
             android:id="@+id/detail_date"
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/detail_imagepath"
             android:layout_below="@id/detail_date_label"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="@dimen/normal_layout_margin"/>
 
         <TextView
             android:id="@+id/detail_rating_label"
@@ -41,10 +42,10 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/detail_imagepath"
             android:layout_below="@+id/detail_date"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:textSize="22sp"
-            android:text="Rating"/>
+            android:layout_marginTop="@dimen/normal_layout_margin"
+            android:layout_marginStart="@dimen/normal_layout_margin"
+            android:textSize="@dimen/heading_text_size"
+            android:text="@string/rating"/>
 
         <TextView
             android:id="@+id/detail_rating"
@@ -52,23 +53,23 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/detail_imagepath"
             android:layout_below="@+id/detail_rating_label"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="@dimen/normal_layout_margin"/>
 
         <TextView
             android:id="@+id/detail_overview_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/detail_imagepath"
-            android:layout_marginTop="8dp"
-            android:textSize="22sp"
-            android:text="Synopsis"/>
+            android:layout_marginTop="@dimen/normal_layout_margin"
+            android:textSize="@dimen/heading_text_size"
+            android:text="@string/synopsis"/>
 
         <TextView
             android:id="@+id/detail_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/detail_overview_heading"
-            android:layout_marginBottom="22dp"/>
+            android:layout_marginBottom="@dimen/detail_layout_margin_bottom"/>
 
     </RelativeLayout>
 

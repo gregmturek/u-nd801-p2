@@ -25,7 +25,6 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
     String mOverview;
     String mImagepath2;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +41,6 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
         }
 
         Configuration config = getResources().getConfiguration();
-        int screenWidthDp = config.screenWidthDp;
         int screenHeightDp = config.screenHeightDp;
 
         int appbarImageHeight = screenHeightDp / divisor;
@@ -53,7 +51,7 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
         appbar.getLayoutParams().height = appbarImageHeight;
 
 /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.mId.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,29 +60,36 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
             }
         });
 */
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        DetailActivity movieInfo = (DetailActivity) getIntent().getParcelableExtra("THE_DATA");
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        DetailActivity movieInfo = getIntent().getParcelableExtra("THE_DATA");
 
         setTitle(movieInfo.mTitle);
+
+/*
+        TextView titleTextView = (TextView) findViewById(R.id.action_bar_title);
+        titleTextView.setShadowLayer(1, 1, 1, 0);
+*/
 
         ImageView ivImagepath2 = (ImageView) findViewById(R.id.detail_imagepath2);
         Picasso.with(DetailActivity.this).load(movieInfo.mImagepath2).into(ivImagepath2);
 
         ImageView ivImagepath = (ImageView) findViewById(R.id.detail_imagepath);
-        int ivImagepathHeight = (screenHeightDp / divisor) - 16;
+        float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) / getResources().getDisplayMetrics().density;
+        int ivImagepathHeight = (screenHeightDp / divisor) - (Math.round(marginValue) * 2);
         ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ivImagepathHeight, getResources().getDisplayMetrics());
-        int actionBarHeight = 0;
         if(divisor == 1) {
             final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
                     new int[]{R.attr.actionBarSize}
             );
-            actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+            int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
             styledAttributes.recycle();
             ivImagepathHeight -= actionBarHeight;
         }
-        int ivImagepathWidth = (int) Math.round(ivImagepathHeight / 1.5);
-        ivImagepath.getLayoutParams().width = ivImagepathWidth;
+        ivImagepath.getLayoutParams().width = (int) Math.round(ivImagepathHeight / 1.5);
         ivImagepath.getLayoutParams().height = ivImagepathHeight;
         Picasso.with(DetailActivity.this).load(movieInfo.mImagepath).into(ivImagepath);
 
@@ -97,7 +102,6 @@ public class DetailActivity extends AppCompatActivity implements Parcelable {
         TextView tvOverview = (TextView) findViewById(R.id.detail_overview);
         tvOverview.setText(movieInfo.mOverview);
     }
-
 
     @Override
     public int describeContents() {

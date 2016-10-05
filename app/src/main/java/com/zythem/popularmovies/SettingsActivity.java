@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * Binds a preference's summary to its value. More specifically, when the
      * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
+     * preference mTitle) is updated to reflect the value. The summary is also
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
@@ -138,7 +138,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             if (!super.onMenuItemSelected(featureId, item)) {
-//                NavUtils.navigateUpFromSameTask(this);
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
             }

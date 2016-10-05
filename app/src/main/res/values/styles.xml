@@ -17,4 +17,15 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+
+    <style name="DetailTitleOverlayText">
+        <item name="android:textColor">@color/title_text_color</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+        <item name="android:shadowColor">@color/title_text_shadow</item>
+        <item name="android:shadowDx">@integer/title_shadow_Dx</item>
+        <item name="android:shadowDy">@integer/title_shadow_Dy</item>
+        <item name="android:shadowRadius">@integer/title_shadow_Radius</item>
+    </style>
+
 </resources>
