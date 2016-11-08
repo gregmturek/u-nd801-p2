@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class tabFragment extends Fragment {
+    public static class TabFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -115,15 +115,15 @@ public class MainActivity extends AppCompatActivity {
         private GridLayoutManager mGlm;
         private String[][] mMovieData;
 
-        public tabFragment() {
+        public TabFragment() {
         }
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static tabFragment newInstance(int sectionNumber) {
-            tabFragment fragment = new tabFragment();
+        public static TabFragment newInstance(int sectionNumber) {
+            TabFragment fragment = new TabFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -339,8 +339,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a tabFragment (defined as a static inner class below).
-            return tabFragment.newInstance(position + 1);
+            // Return a TabFragment (defined as a static inner class below).
+            return TabFragment.newInstance(position + 1);
         }
 
         @Override
