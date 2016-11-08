@@ -2,10 +2,11 @@ package com.zythem.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private int mCardImageWidth;
     private int mCardImageHeight;
+
+    private boolean mImages;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -79,6 +82,10 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         //convert dp to pixels
         mCardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageWidth, context.getResources().getDisplayMetrics());
         mCardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageHeight, context.getResources().getDisplayMetrics());
+
+        SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(context);
+        boolean defaultValue = context.getResources().getBoolean(R.bool.images_switch_default);
+        mImages = sharedPref.getBoolean("images_switch", defaultValue);
     }
 
     // Create new views (invoked by the layout manager)
@@ -100,7 +107,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.mImageView.getLayoutParams().height = mCardImageHeight;
 
         holder.mTextViewTitle.setText(mMovieData[position][0]);
-        if (!TextUtils.isEmpty(mMovieData[position][1])) {
+        if (mMovieData[position][1] != null && !mMovieData[position][1].isEmpty() && mImages) {
             Picasso.with(mContext)
                     .load(mMovieData[position][1])
                     .noFade()

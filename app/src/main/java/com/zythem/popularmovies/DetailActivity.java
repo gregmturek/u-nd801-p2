@@ -1,12 +1,13 @@
 package com.zythem.popularmovies;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -65,8 +66,12 @@ public class DetailActivity extends AppCompatActivity {
 
         setTitle(movieInfo.mTitle);
 
+        SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
+        boolean images = sharedPref.getBoolean("images_switch", defaultValue);
+
         ImageView ivImagepath2 = (ImageView) findViewById(R.id.detail_imagepath2);
-        if (!TextUtils.isEmpty(movieInfo.mImagepath2)) {
+        if (movieInfo.mImagepath2 != null && !movieInfo.mImagepath2.isEmpty() && images) {
             Picasso.with(DetailActivity.this)
                     .load(movieInfo.mImagepath2)
                     .into(ivImagepath2);
@@ -90,7 +95,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView tvDate = (TextView) findViewById(R.id.detail_date);
         TextView tvRating = (TextView) findViewById(R.id.detail_rating);
 
-        if (!TextUtils.isEmpty(movieInfo.mImagepath)) {
+        if (movieInfo.mImagepath != null && !movieInfo.mImagepath.isEmpty() && images) {
             Picasso.with(DetailActivity.this)
                     .load(movieInfo.mImagepath)
                     .noFade()

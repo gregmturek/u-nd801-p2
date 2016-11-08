@@ -8,6 +8,11 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_title_number_of_movies" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="images_switch"
+        android:summary="@string/pref_description_images"
+        android:title="@string/pref_title_images" />
 
 <!--Disable example prefs    -->
 <!--

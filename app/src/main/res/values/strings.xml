@@ -35,6 +35,11 @@
         <item>32</item>
     </string-array>
 
+    <string name="pref_title_images">Enable images</string>
+    <string name="pref_description_images">Turn images on or off</string>
+    <bool name="images_switch_default">true</bool>
+
+
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
     <string name="pref_description_social_recommendations">Recommendations for people to contact
         based on your message history
