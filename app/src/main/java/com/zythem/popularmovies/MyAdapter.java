@@ -14,19 +14,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.parceler.Parcels;
+
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private Context mContext;
     private String[][] mMovieData;
-
-    private static class MovieDataToPass {
-        String mTitle;
-        String mImagepath;
-        String mDate;
-        String mRating;
-        String mId;
-        String mOverview;
-        String mImagepath2;
-    }
 
     private int mCardImageWidth;
     private int mCardImageHeight;
@@ -54,16 +46,8 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                    DetailActivity movieInfo = new DetailActivity();
-                    MovieDataToPass data = (MovieDataToPass) mCardView.getTag();
-                    movieInfo.mTitle = data.mTitle;
-                    movieInfo.mImagepath = data.mImagepath;
-                    movieInfo.mDate = data.mDate;
-                    movieInfo.mRating = data.mRating;
-                    movieInfo.mId = data.mId;
-                    movieInfo.mOverview = data.mOverview;
-                    movieInfo.mImagepath2 = data.mImagepath2;
-                    intent.putExtra("THE_DATA", movieInfo);
+                    MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
+                    intent.putExtra("THE_DATA", Parcels.wrap(movieInfo));
                     v.getContext().startActivity(intent);
                 }
             });
