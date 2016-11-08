@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -63,7 +66,11 @@ public class DetailActivity extends AppCompatActivity {
         setTitle(movieInfo.mTitle);
 
         ImageView ivImagepath2 = (ImageView) findViewById(R.id.detail_imagepath2);
-        Picasso.with(DetailActivity.this).load(movieInfo.mImagepath2).into(ivImagepath2);
+        if (!TextUtils.isEmpty(movieInfo.mImagepath2)) {
+            Picasso.with(DetailActivity.this)
+                    .load(movieInfo.mImagepath2)
+                    .into(ivImagepath2);
+        }
 
         ImageView ivImagepath = (ImageView) findViewById(R.id.detail_imagepath);
         float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) / getResources().getDisplayMetrics().density;
@@ -79,12 +86,40 @@ public class DetailActivity extends AppCompatActivity {
         }
         ivImagepath.getLayoutParams().width = (int) Math.round(ivImagepathHeight / 1.5);
         ivImagepath.getLayoutParams().height = ivImagepathHeight;
-        Picasso.with(DetailActivity.this).load(movieInfo.mImagepath).into(ivImagepath);
 
         TextView tvDate = (TextView) findViewById(R.id.detail_date);
+        TextView tvRating = (TextView) findViewById(R.id.detail_rating);
+
+        if (!TextUtils.isEmpty(movieInfo.mImagepath)) {
+            Picasso.with(DetailActivity.this)
+                    .load(movieInfo.mImagepath)
+                    .noFade()
+                    .into(ivImagepath);
+        }
+        else {
+            ivImagepath.setVisibility(View.GONE);
+
+            TextView tvOverviewHeading = (TextView) findViewById(R.id.detail_overview_heading);
+            RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
+            tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
+
+            TextView tvDateLabel = (TextView) findViewById(R.id.detail_date_label);
+            RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
+            tvDateLabelParams.setMarginStart(0);
+
+            RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
+            tvDateParams.setMarginStart(0);
+
+            TextView tvRatingLabel = (TextView) findViewById(R.id.detail_rating_label);
+            RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
+            tvRatingLabelParams.setMarginStart(0);
+
+            RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
+            tvRatingParams.setMarginStart(0);
+        }
+
         tvDate.setText(movieInfo.mDate);
 
-        TextView tvRating = (TextView) findViewById(R.id.detail_rating);
         tvRating.setText(movieInfo.mRating);
 
         TextView tvOverview = (TextView) findViewById(R.id.detail_overview);

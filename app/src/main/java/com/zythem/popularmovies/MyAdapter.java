@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,7 +100,12 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.mImageView.getLayoutParams().height = mCardImageHeight;
 
         holder.mTextViewTitle.setText(mMovieData[position][0]);
-        Picasso.with(mContext).load(mMovieData[position][1]).into(holder.mImageView);
+        if (!TextUtils.isEmpty(mMovieData[position][1])) {
+            Picasso.with(mContext)
+                    .load(mMovieData[position][1])
+                    .noFade()
+                    .into(holder.mImageView);
+        }
         holder.mTextViewDate.setText(mMovieData[position][2]);
         holder.mTextViewRating.setText(mMovieData[position][3]);
 
