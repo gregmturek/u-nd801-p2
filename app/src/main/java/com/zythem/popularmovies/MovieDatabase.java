@@ -8,5 +8,8 @@ public final class MovieDatabase {
 
     public static final int VERSION = 1;
 
-    @Table(MovieColumns.class) public static final String MOVIES = "Movies";
+    @Table(MostPopularColumns.class) public static final String MOST_POPULAR = "Most_Popular";
+    @Table(TopRatedColumns.class) public static final String TOP_RATED = "Top_Rated";
+    @Table(FavoriteColumns.class) public static final String FAVORITE = "Favorite";
+
 }

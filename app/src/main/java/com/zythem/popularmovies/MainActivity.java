@@ -39,7 +39,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static com.zythem.popularmovies.MovieContentProvider.Movies.MOVIES;
+import static com.zythem.popularmovies.MovieContentProvider.MostPopular.MOVIES;
 import static com.zythem.popularmovies.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
@@ -151,14 +151,14 @@ public class MainActivity extends AppCompatActivity {
 
             for (String[] movie : movieData) {
                 ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                        MovieContentProvider.Movies.MOVIES);
-                builder.withValue(MovieColumns.MOVIE_TITLE, movie[0]);
-                builder.withValue(MovieColumns.MOVIE_IMAGEPATH, movie[1]);
-                builder.withValue(MovieColumns.MOVIE_DATE, movie[2]);
-                builder.withValue(MovieColumns.MOVIE_RATING, movie[3]);
-                builder.withValue(MovieColumns.MOVIE_ID, movie[4]);
-                builder.withValue(MovieColumns.MOVIE_OVERVIEW, movie[5]);
-                builder.withValue(MovieColumns.MOVIE_IMAGEPATH_2, movie[6]);
+                        MovieContentProvider.MostPopular.MOVIES);
+                builder.withValue(MostPopularColumns.MOVIE_TITLE, movie[0]);
+                builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH, movie[1]);
+                builder.withValue(MostPopularColumns.MOVIE_DATE, movie[2]);
+                builder.withValue(MostPopularColumns.MOVIE_RATING, movie[3]);
+                builder.withValue(MostPopularColumns.MOVIE_ID, movie[4]);
+                builder.withValue(MostPopularColumns.MOVIE_OVERVIEW, movie[5]);
+                builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH_2, movie[6]);
                 batchOperations.add(builder.build());
             }
             try{

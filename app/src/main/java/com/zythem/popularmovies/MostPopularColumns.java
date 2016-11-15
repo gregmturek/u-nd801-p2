@@ -5,7 +5,7 @@ import net.simonvt.schematic.annotation.DataType;
 import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.PrimaryKey;
 
-public interface MovieColumns {
+public interface MostPopularColumns {
     @DataType(DataType.Type.INTEGER)
     @PrimaryKey
     @AutoIncrement
