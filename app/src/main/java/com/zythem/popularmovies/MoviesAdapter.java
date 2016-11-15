@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -18,9 +20,8 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
-class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> {
     private Context mContext;
-    private String[][] mMovieData;
 
     private int mCardImageWidth;
     private int mCardImageHeight;
@@ -30,14 +31,14 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         CardView mCardView;
         TextView mTextViewTitle;
         ImageView mImageView;
         TextView mTextViewDate;
         TextView mTextViewRating;
 
-        MyViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
 
             mCardView = (CardView) v.findViewById(R.id.card_view);
@@ -59,18 +60,17 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    MyAdapter(Context context, String[][] movieData) {
-        this.mContext = context;
-        mMovieData = movieData;
+    MoviesAdapter(Context context, Cursor cursor) {
+        super(context, cursor);
+        mContext = context;
 
         int cardsInRowPortrait = context.getResources().getInteger(R.integer.cards_in_row_portrait);
         int cardsInRowLandscape = context.getResources().getInteger(R.integer.cards_in_row_landscape);
         int cardsInRow;
 
-        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             cardsInRow = cardsInRowPortrait;
-        }
-        else{
+        } else {
             cardsInRow = cardsInRowLandscape;
         }
         Configuration config = context.getResources().getConfiguration();
@@ -83,53 +83,52 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mCardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageWidth, context.getResources().getDisplayMetrics());
         mCardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageHeight, context.getResources().getDisplayMetrics());
 
-        SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         boolean defaultValue = context.getResources().getBoolean(R.bool.images_switch_default);
         mImages = sharedPref.getBoolean("images_switch", defaultValue);
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_item, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        return new MyViewHolder(v);
+        return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-
+    public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
         holder.mTextViewTitle.getLayoutParams().width = mCardImageWidth;
         holder.mTextViewTitle.getLayoutParams().height = mCardImageHeight;
         holder.mImageView.getLayoutParams().width = mCardImageWidth;
         holder.mImageView.getLayoutParams().height = mCardImageHeight;
 
-        holder.mTextViewTitle.setText(mMovieData[position][0]);
-        if (mMovieData[position][1] != null && !mMovieData[position][1].isEmpty() && mImages) {
+        DatabaseUtils.dumpCursor(cursor);
+
+        holder.mTextViewTitle.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_TITLE)));
+        if (cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)) != null
+                && !cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)).isEmpty()
+                && mImages) {
             Picasso.with(mContext)
-                    .load(mMovieData[position][1])
+                    .load(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)))
                     .noFade()
                     .into(holder.mImageView);
         }
-        holder.mTextViewDate.setText(mMovieData[position][2]);
-        holder.mTextViewRating.setText(mMovieData[position][3]);
+        holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE)));
+        holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING)));
 
         MovieDataToPass data = new MovieDataToPass();
-        data.mTitle = mMovieData[position][0];
-        data.mImagepath = mMovieData[position][1];
-        data.mDate = mMovieData[position][2];
-        data.mRating = mMovieData[position][3];
-        data.mId = mMovieData[position][4];
-        data.mOverview = mMovieData[position][5];
-        data.mImagepath2 = mMovieData[position][6];
+        data.mTitle = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
+        data.mImagepath = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
+        data.mDate = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE));
+        data.mRating = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING));
+        data.mId = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_ID));
+        data.mOverview = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
+        data.mImagepath2 = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
 
         holder.mCardView.setTag(data);
     }
 
-    @Override
-    public int getItemCount() {
-        return mMovieData.length;
-    }
 }
