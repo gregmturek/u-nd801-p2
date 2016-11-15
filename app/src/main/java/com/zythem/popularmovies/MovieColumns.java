@@ -28,7 +28,7 @@ public interface MovieColumns {
 
     @DataType(DataType.Type.INTEGER)
     @NotNull
-    public static final String MOVIE_ID = "id";
+    public static final String MOVIE_ID = "Id";
 
     @DataType(DataType.Type.TEXT)
     @NotNull

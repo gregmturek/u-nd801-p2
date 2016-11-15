@@ -10,7 +10,7 @@ import net.simonvt.schematic.annotation.TableEndpoint;
 @ContentProvider(authority = MovieContentProvider.AUTHORITY, database = MovieDatabase.class)
 public final class MovieContentProvider {
 
-    public static final String AUTHORITY = "com.zythem.MovieContentProvider";
+    public static final String AUTHORITY = "com.zythem.popularmovies.MovieContentProvider";
 
     @TableEndpoint(table = MovieDatabase.MOVIES)
     public static class Movies {

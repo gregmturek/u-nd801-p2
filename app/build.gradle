@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 24
@@ -22,10 +22,6 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'THE_MOVIE_DATABASE_API_KEY', MyTheMovieDatabaseApiKey
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {

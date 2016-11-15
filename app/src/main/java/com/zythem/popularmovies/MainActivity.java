@@ -1,11 +1,14 @@
 package com.zythem.popularmovies;
 
+import android.content.ContentProviderOperation;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -34,7 +37,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
+import static com.zythem.popularmovies.MovieContentProvider.Movies.MOVIES;
 import static com.zythem.popularmovies.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
@@ -106,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
          * The fragment argument representing the section number for this
          * fragment.
          */
+        private static final String LOG_TAG = TabFragment.class.getSimpleName();
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         private int mTabNum;
@@ -131,8 +137,41 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void showData() {
+            deleteAllData();
+            storeAllData(mMovieData);
+
             mMovieAdapter = new MyAdapter(getActivity(), mMovieData);
             mRv.setAdapter(mMovieAdapter);
+        }
+
+        public void storeAllData(String[][] movieData) {
+            Log.d(LOG_TAG, "insert all");
+
+            ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movieData.length);
+
+            for (String[] movie : movieData) {
+                ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                        MovieContentProvider.Movies.MOVIES);
+                builder.withValue(MovieColumns.MOVIE_TITLE, movie[0]);
+                builder.withValue(MovieColumns.MOVIE_IMAGEPATH, movie[1]);
+                builder.withValue(MovieColumns.MOVIE_DATE, movie[2]);
+                builder.withValue(MovieColumns.MOVIE_RATING, movie[3]);
+                builder.withValue(MovieColumns.MOVIE_ID, movie[4]);
+                builder.withValue(MovieColumns.MOVIE_OVERVIEW, movie[5]);
+                builder.withValue(MovieColumns.MOVIE_IMAGEPATH_2, movie[6]);
+                batchOperations.add(builder.build());
+            }
+            try{
+                getActivity().getContentResolver().applyBatch(MovieContentProvider.AUTHORITY, batchOperations);
+            } catch(RemoteException | OperationApplicationException e){
+                Log.e(LOG_TAG, "Error applying batch insert all", e);
+            }
+        }
+
+        public void deleteAllData() {
+            Log.d(LOG_TAG, "delete all");
+
+            getActivity().getContentResolver().delete(MOVIES, null, null);
         }
 
         @Override
