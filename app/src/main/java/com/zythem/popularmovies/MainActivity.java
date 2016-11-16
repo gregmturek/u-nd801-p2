@@ -236,7 +236,9 @@ public class MainActivity extends AppCompatActivity {
             mGlm = new GridLayoutManager(getActivity(), cardsInRow);
             mRv.setLayoutManager(mGlm);
 
-            mCursorAdapter = new MoviesAdapter(getActivity(), null);
+            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
+
+            mCursorAdapter = new MoviesAdapter(getActivity(), null, mTabNum);
             mRv.setAdapter(mCursorAdapter);
 
             return rootView;
@@ -249,11 +251,12 @@ public class MainActivity extends AppCompatActivity {
             String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
             String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
 
-            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
+            Cursor c;
+
             switch (mTabNum) {
                 case 1:
                     // TODO: If 24 hours/new day then delete the data from table
-                    Cursor c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
+                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
                             null, null, null, null);
                     Log.i(LOG_TAG, "cursor count: " + c.getCount());
                     if (c == null || c.getCount() == 0){
@@ -262,8 +265,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case 2:
-                    FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
-                    fetchTopRatedTask.execute("top_rated", pages);
+                    // TODO: If 24 hours/new day then delete the data from table
+                    c = getActivity().getContentResolver().query(MovieContentProvider.TopRated.MOVIES,
+                            null, null, null, null);
+                    Log.i(LOG_TAG, "cursor count: " + c.getCount());
+                    if (c == null || c.getCount() == 0){
+                        FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
+                        fetchTopRatedTask.execute("top_rated", pages);
+                    }
                     break;
                 case 3:
                     break;
@@ -285,7 +294,19 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args){
-            return new CursorLoader(getActivity(), MovieContentProvider.MostPopular.MOVIES,
+            Uri uri = null;
+            switch (mTabNum) {
+                case 1:
+                    uri = MovieContentProvider.MostPopular.MOVIES;
+                    break;
+                case 2:
+                    uri = MovieContentProvider.TopRated.MOVIES;
+                break;
+                case 3:
+                    uri = MovieContentProvider.Favorite.MOVIES;
+                break;
+            }
+            return new CursorLoader(getActivity(), uri,
                     null,
                     null,
                     null,
