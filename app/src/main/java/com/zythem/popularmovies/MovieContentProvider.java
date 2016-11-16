@@ -24,7 +24,7 @@ public final class MovieContentProvider {
         @ContentUri(
                 path = Path.MOST_POPULAR,
                 type = "vnd.android.cursor.dir/" + Path.MOST_POPULAR,
-                defaultSort = MostPopularColumns.MOVIE_TITLE + " ASC")
+                defaultSort = MostPopularColumns._ID + " ASC")
         public static final Uri MOVIES = Uri.parse("content://" + AUTHORITY + "/" + Path.MOST_POPULAR);
 
         @InexactContentUri(
@@ -44,7 +44,7 @@ public final class MovieContentProvider {
         @ContentUri(
                 path = Path.TOP_RATED,
                 type = "vnd.android.cursor.dir/" + Path.TOP_RATED,
-                defaultSort = MostPopularColumns.MOVIE_TITLE + " ASC")
+                defaultSort = MostPopularColumns._ID + " ASC")
         public static final Uri MOVIES = Uri.parse("content://" + AUTHORITY + "/" + Path.TOP_RATED);
 
         @InexactContentUri(
@@ -64,7 +64,7 @@ public final class MovieContentProvider {
         @ContentUri(
                 path = Path.FAVORITE,
                 type = "vnd.android.cursor.dir/" + Path.FAVORITE,
-                defaultSort = MostPopularColumns.MOVIE_TITLE + " ASC")
+                defaultSort = MostPopularColumns._ID + " ASC")
         public static final Uri MOVIES = Uri.parse("content://" + AUTHORITY + "/" + Path.FAVORITE);
 
         @InexactContentUri(

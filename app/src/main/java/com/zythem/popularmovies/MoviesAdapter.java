@@ -134,46 +134,46 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                 data.mImagepath2 = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
                 break;
             case 2:
-                holder.mTextViewTitle.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_TITLE)));
-                if (cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)) != null
-                        && !cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)).isEmpty()
+                holder.mTextViewTitle.setText(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_TITLE)));
+                if (cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_IMAGEPATH)) != null
+                        && !cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_IMAGEPATH)).isEmpty()
                         && mImages) {
                     Picasso.with(mContext)
-                            .load(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)))
+                            .load(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_IMAGEPATH)))
                             .noFade()
                             .into(holder.mImageView);
                 }
-                holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE)));
-                holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING)));
+                holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_DATE)));
+                holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_RATING)));
 
-                data.mTitle = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
-                data.mImagepath = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
-                data.mDate = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE));
-                data.mRating = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING));
-                data.mId = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_ID));
-                data.mOverview = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
-                data.mImagepath2 = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
+                data.mTitle = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_TITLE));
+                data.mImagepath = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_IMAGEPATH));
+                data.mDate = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_DATE));
+                data.mRating = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_RATING));
+                data.mId = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_ID));
+                data.mOverview = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_OVERVIEW));
+                data.mImagepath2 = cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_IMAGEPATH_2));
                 break;
             case 3:
-                holder.mTextViewTitle.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_TITLE)));
-                if (cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)) != null
-                        && !cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)).isEmpty()
+                holder.mTextViewTitle.setText(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_TITLE)));
+                if (cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_IMAGEPATH)) != null
+                        && !cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_IMAGEPATH)).isEmpty()
                         && mImages) {
                     Picasso.with(mContext)
-                            .load(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)))
+                            .load(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_IMAGEPATH)))
                             .noFade()
                             .into(holder.mImageView);
                 }
-                holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE)));
-                holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING)));
+                holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_DATE)));
+                holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_RATING)));
 
-                data.mTitle = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
-                data.mImagepath = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
-                data.mDate = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE));
-                data.mRating = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING));
-                data.mId = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_ID));
-                data.mOverview = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
-                data.mImagepath2 = cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
+                data.mTitle = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_TITLE));
+                data.mImagepath = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_IMAGEPATH));
+                data.mDate = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_DATE));
+                data.mRating = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_RATING));
+                data.mId = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_ID));
+                data.mOverview = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_OVERVIEW));
+                data.mImagepath2 = cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_IMAGEPATH_2));
                 break;
         }
 
