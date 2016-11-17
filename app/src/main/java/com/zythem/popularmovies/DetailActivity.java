@@ -1,5 +1,6 @@
 package com.zythem.popularmovies;
 
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -79,19 +80,33 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Cursor c = null;
-                String[] projection = {FavoriteColumns.MOVIE_ID};
+                String[] projection = {FavoriteColumns._ID, FavoriteColumns.MOVIE_ID};
                 String selectionClause = FavoriteColumns.MOVIE_ID + " = ?";
                 String[] selectionArgs = {movieInfo.mId};
                 try {
                     c = getApplicationContext().getContentResolver().query(MovieContentProvider.Favorite.MOVIES,
                             projection, selectionClause, selectionArgs, null);
                     if (c == null || c.getCount() == 0) {
-                        // TODO: add to db
+                        ContentValues newValues = new ContentValues();
+                        newValues.put(FavoriteColumns.MOVIE_TITLE, movieInfo.mTitle);
+                        newValues.put(FavoriteColumns.MOVIE_IMAGEPATH, movieInfo.mImagepath);
+                        newValues.put(FavoriteColumns.MOVIE_DATE, movieInfo.mDate);
+                        newValues.put(FavoriteColumns.MOVIE_RATING, movieInfo.mRating);
+                        newValues.put(FavoriteColumns.MOVIE_ID, movieInfo.mId);
+                        newValues.put(FavoriteColumns.MOVIE_OVERVIEW, movieInfo.mOverview);
+                        newValues.put(FavoriteColumns.MOVIE_IMAGEPATH_2, movieInfo.mImagepath2);
+                        getApplicationContext().getContentResolver().insert(MovieContentProvider.Favorite.MOVIES, newValues);
+
                         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
                         fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_on));
+
                         Snackbar.make(view, "Added to the Favorite tab!", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     } else {
+                        c.moveToFirst();
+                        long _id = c.getLong(c.getColumnIndex(FavoriteColumns._ID));
+                        getApplicationContext().getContentResolver().delete(MovieContentProvider.Favorite.withId(_id), null, null);
+
                         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
                         fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_off));
                         Snackbar.make(view, "Removed from the Favorite tab!", Snackbar.LENGTH_LONG)
