@@ -37,6 +37,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zythem.popularmovies.MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.zythem.popularmovies.MovieContentProvider"
+            android:name="com.zythem.popularmovies.generated.MovieContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

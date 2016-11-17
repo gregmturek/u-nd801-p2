@@ -1,17 +1,24 @@
 package com.zythem.popularmovies;
 
+import android.content.ContentProviderOperation;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,7 +41,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
+import static com.zythem.popularmovies.MovieContentProvider.MostPopular.MOVIES;
 import static com.zythem.popularmovies.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
@@ -101,16 +110,18 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class TabFragment extends Fragment {
+    public static class TabFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
         /**
-         * The fragment argument representing the section number for this
+         * The fragment argument representing the section number for    this
          * fragment.
          */
+        private static final String LOG_TAG = TabFragment.class.getSimpleName();
+        private static final int CURSOR_LOADER_ID = 0;
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         private int mTabNum;
 
-        private MyAdapter mMovieAdapter;
+        private MoviesAdapter mCursorAdapter;
         private RecyclerView mRv;
         private GridLayoutManager mGlm;
         private String[][] mMovieData;
@@ -130,16 +141,58 @@ public class MainActivity extends AppCompatActivity {
             return fragment;
         }
 
-        public void showData() {
-            mMovieAdapter = new MyAdapter(getActivity(), mMovieData);
-            mRv.setAdapter(mMovieAdapter);
+         public void storeAllData(String[][] movieData) {
+            Log.d(LOG_TAG, "insert all");
+
+            ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movieData.length);
+
+            switch (mTabNum) {
+                case 1:
+                    for (String[] movie : movieData) {
+                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                                MovieContentProvider.MostPopular.MOVIES);
+                        builder.withValue(MostPopularColumns.MOVIE_TITLE, movie[0]);
+                        builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH, movie[1]);
+                        builder.withValue(MostPopularColumns.MOVIE_DATE, movie[2]);
+                        builder.withValue(MostPopularColumns.MOVIE_RATING, movie[3]);
+                        builder.withValue(MostPopularColumns.MOVIE_ID, movie[4]);
+                        builder.withValue(MostPopularColumns.MOVIE_OVERVIEW, movie[5]);
+                        builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH_2, movie[6]);
+                        batchOperations.add(builder.build());
+                    }
+                    break;
+                case 2:
+                    for (String[] movie : movieData) {
+                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                                MovieContentProvider.TopRated.MOVIES);
+                        builder.withValue(TopRatedColumns.MOVIE_TITLE, movie[0]);
+                        builder.withValue(TopRatedColumns.MOVIE_IMAGEPATH, movie[1]);
+                        builder.withValue(TopRatedColumns.MOVIE_DATE, movie[2]);
+                        builder.withValue(TopRatedColumns.MOVIE_RATING, movie[3]);
+                        builder.withValue(TopRatedColumns.MOVIE_ID, movie[4]);
+                        builder.withValue(TopRatedColumns.MOVIE_OVERVIEW, movie[5]);
+                        builder.withValue(TopRatedColumns.MOVIE_IMAGEPATH_2, movie[6]);
+                        batchOperations.add(builder.build());
+                    }
+                    break;
+            }
+
+            try{
+                getActivity().getContentResolver().applyBatch(MovieContentProvider.AUTHORITY, batchOperations);
+            } catch(RemoteException | OperationApplicationException e){
+                Log.e(LOG_TAG, "Error applying batch insert all", e);
+            }
         }
 
-        @Override
+        public void deleteAllData() {
+            Log.d(LOG_TAG, "delete all");
+
+            getActivity().getContentResolver().delete(MOVIES, null, null);
+        }
+
+ /*       @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
-            FetchMovieTask movieTask = new FetchMovieTask();
 
             SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
             String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
@@ -148,14 +201,19 @@ public class MainActivity extends AppCompatActivity {
             mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
             switch (mTabNum) {
                 case 1:
+
+                    FetchMovieTask movieTask = new FetchMovieTask();
                     movieTask.execute("popular", pages);
                     break;
                 case 2:
+                    FetchMovieTask movieTask = new FetchMovieTask();
                     movieTask.execute("top_rated", pages);
+                    break;
+                case 3:
                     break;
             }
         }
-
+*/
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -178,8 +236,98 @@ public class MainActivity extends AppCompatActivity {
             mGlm = new GridLayoutManager(getActivity(), cardsInRow);
             mRv.setLayoutManager(mGlm);
 
+            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
+
+            mCursorAdapter = new MoviesAdapter(getActivity(), null, mTabNum);
+            mRv.setAdapter(mCursorAdapter);
+
             return rootView;
         }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState){
+
+            SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
+            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
+            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
+
+            Cursor c;
+
+            switch (mTabNum) {
+                case 1:
+                    // TODO: If 24 hours/new day then delete the data from table
+                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
+                            null, null, null, null);
+                    Log.i(LOG_TAG, "cursor count: " + c.getCount());
+                    if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20){
+                        getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
+                        FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
+                        fetchMostPopularTask.execute("popular", pages);
+                    }
+                    break;
+                case 2:
+                    // TODO: If 24 hours/new day then delete the data from table
+                    c = getActivity().getContentResolver().query(MovieContentProvider.TopRated.MOVIES,
+                            null, null, null, null);
+                    Log.i(LOG_TAG, "cursor count: " + c.getCount());
+                    if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20){
+                        getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
+                        FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
+                        fetchTopRatedTask.execute("top_rated", pages);
+                    }
+                    break;
+                case 3:
+                    break;
+            }
+
+            getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
+            super.onActivityCreated(savedInstanceState);
+        }
+
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            Log.d(LOG_TAG, "resume called");
+            getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        }
+
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args){
+            Uri uri = null;
+            switch (mTabNum) {
+                case 1:
+                    uri = MovieContentProvider.MostPopular.MOVIES;
+                    break;
+                case 2:
+                    uri = MovieContentProvider.TopRated.MOVIES;
+                break;
+                case 3:
+                    uri = MovieContentProvider.Favorite.MOVIES;
+                break;
+            }
+            return new CursorLoader(getActivity(), uri,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+            mCursorAdapter.swapCursor(data);
+
+
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader){
+            mCursorAdapter.swapCursor(null);
+        }
+
+
 
         public class FetchMovieTask extends AsyncTask<String, Void, String[][]> {
 
@@ -318,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
                 if (result != null) {
                     mMovieData = result;
                     // New data is back from the server.  Hooray!
-                    showData();
+                    storeAllData(mMovieData);
                 }
             }
 
@@ -345,8 +493,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 2 total pages.
-            return 2;
+            // Show 3 total pages.
+            return 3;
         }
 
         @Override
@@ -356,8 +504,8 @@ public class MainActivity extends AppCompatActivity {
                     return "Most Popular";
                 case 1:
                     return "Top Rated";
-//                case 2:
-//                    return "Favorites";
+                case 2:
+                    return "Favorite";
             }
             return null;
         }
