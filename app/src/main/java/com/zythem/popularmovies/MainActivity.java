@@ -259,7 +259,8 @@ public class MainActivity extends AppCompatActivity {
                     c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
                             null, null, null, null);
                     Log.i(LOG_TAG, "cursor count: " + c.getCount());
-                    if (c == null || c.getCount() == 0){
+                    if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20){
+                        getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
                         FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
                         fetchMostPopularTask.execute("popular", pages);
                     }
@@ -269,7 +270,8 @@ public class MainActivity extends AppCompatActivity {
                     c = getActivity().getContentResolver().query(MovieContentProvider.TopRated.MOVIES,
                             null, null, null, null);
                     Log.i(LOG_TAG, "cursor count: " + c.getCount());
-                    if (c == null || c.getCount() == 0){
+                    if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20){
+                        getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
                         FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
                         fetchTopRatedTask.execute("top_rated", pages);
                     }
