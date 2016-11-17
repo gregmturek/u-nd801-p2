@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
             mRv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
             mRv.setHasFixedSize(true);
+            mRv.setItemViewCacheSize(16);
 
             mGlm = new GridLayoutManager(getActivity(), cardsInRow);
             mRv.setLayoutManager(mGlm);
