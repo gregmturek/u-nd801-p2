@@ -43,7 +43,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static com.zythem.popularmovies.MovieContentProvider.MostPopular.MOVIES;
 import static com.zythem.popularmovies.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
@@ -182,12 +181,6 @@ public class MainActivity extends AppCompatActivity {
             } catch(RemoteException | OperationApplicationException e){
                 Log.e(LOG_TAG, "Error applying batch insert all", e);
             }
-        }
-
-        public void deleteAllData() {
-            Log.d(LOG_TAG, "delete all");
-
-            getActivity().getContentResolver().delete(MOVIES, null, null);
         }
 
         @Override

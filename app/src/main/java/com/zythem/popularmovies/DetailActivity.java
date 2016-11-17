@@ -3,11 +3,16 @@ package com.zythem.popularmovies;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,6 +26,7 @@ import org.parceler.Parcels;
 import static com.zythem.popularmovies.R.layout.activity_detail;
 
 public class DetailActivity extends AppCompatActivity {
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,8 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        final MovieDataToPass movieInfo = Parcels.unwrap(getIntent().getParcelableExtra("THE_DATA"));
 
         int divisor;
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
@@ -47,22 +55,61 @@ public class DetailActivity extends AppCompatActivity {
         AppBarLayout appbar = (AppBarLayout) findViewById(R.id.app_bar);
         appbar.getLayoutParams().height = appbarImageHeight;
 
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.mId.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        Cursor c = null;
+        String[] projection = {FavoriteColumns.MOVIE_ID};
+        String selectionClause = FavoriteColumns.MOVIE_ID + " = ?";
+        String[] selectionArgs = {movieInfo.mId};
+        try {
+            c = getApplicationContext().getContentResolver().query(MovieContentProvider.Favorite.MOVIES,
+                    projection, selectionClause, selectionArgs, null);
+            if (c != null && c.getCount() > 0) {
+                fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_on));
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error ", e);
+        } finally {
+            if(c != null){
+                c.close();
+            }
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Cursor c = null;
+                String[] projection = {FavoriteColumns.MOVIE_ID};
+                String selectionClause = FavoriteColumns.MOVIE_ID + " = ?";
+                String[] selectionArgs = {movieInfo.mId};
+                try {
+                    c = getApplicationContext().getContentResolver().query(MovieContentProvider.Favorite.MOVIES,
+                            projection, selectionClause, selectionArgs, null);
+                    if (c == null || c.getCount() == 0) {
+                        // TODO: add to db
+                        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                        fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_on));
+                        Snackbar.make(view, "Added to the Favorite tab!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    } else {
+                        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                        fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_off));
+                        Snackbar.make(view, "Removed from the Favorite tab!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error ", e);
+                } finally {
+                    if(c != null){
+                        c.close();
+                    }
+                }
             }
         });
-*/
 
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        MovieDataToPass movieInfo = Parcels.unwrap(getIntent().getParcelableExtra("THE_DATA"));
 
         setTitle(movieInfo.mTitle);
 
