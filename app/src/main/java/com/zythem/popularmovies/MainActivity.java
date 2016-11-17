@@ -190,30 +190,6 @@ public class MainActivity extends AppCompatActivity {
             getActivity().getContentResolver().delete(MOVIES, null, null);
         }
 
- /*       @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
-            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
-            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
-
-            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
-            switch (mTabNum) {
-                case 1:
-
-                    FetchMovieTask movieTask = new FetchMovieTask();
-                    movieTask.execute("popular", pages);
-                    break;
-                case 2:
-                    FetchMovieTask movieTask = new FetchMovieTask();
-                    movieTask.execute("top_rated", pages);
-                    break;
-                case 3:
-                    break;
-            }
-        }
-*/
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -252,29 +228,44 @@ public class MainActivity extends AppCompatActivity {
             String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
             String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
 
-            Cursor c;
+            Cursor c = null;
 
             switch (mTabNum) {
                 case 1:
                     // TODO: If 24 hours/new day then delete the data from table
-                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
-                            null, null, null, null);
-                    Log.i(LOG_TAG, "cursor count: " + c.getCount());
-                    if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20){
-                        getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
-                        FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
-                        fetchMostPopularTask.execute("popular", pages);
+                    try {
+                        c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
+                                null, null, null, null);
+
+                        if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20) {
+                            getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
+                            FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
+                            fetchMostPopularTask.execute("popular", pages);
+                        }
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Error ", e);
+                    } finally {
+                        if(c != null){
+                            c.close();
+                        }
                     }
                     break;
                 case 2:
-                    // TODO: If 24 hours/new day then delete the data from table
-                    c = getActivity().getContentResolver().query(MovieContentProvider.TopRated.MOVIES,
-                            null, null, null, null);
-                    Log.i(LOG_TAG, "cursor count: " + c.getCount());
-                    if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20){
-                        getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
-                        FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
-                        fetchTopRatedTask.execute("top_rated", pages);
+                    try {
+                        // TODO: If 24 hours/new day then delete the data from table
+                        c = getActivity().getContentResolver().query(MovieContentProvider.TopRated.MOVIES,
+                                null, null, null, null);
+                        if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20) {
+                            getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
+                            FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
+                            fetchTopRatedTask.execute("top_rated", pages);
+                        }
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Error ", e);
+                    } finally {
+                        if(c != null){
+                            c.close();
+                        }
                     }
                     break;
                 case 3:
