@@ -1,10 +1,13 @@
 package com.zythem.popularmovies;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -16,18 +19,32 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import static com.zythem.popularmovies.R.layout.activity_detail;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+    String[][] mMovieVideos;
+    String[][] mMovieReviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +55,11 @@ public class DetailActivity extends AppCompatActivity {
 
         final MovieDataToPass movieInfo = Parcels.unwrap(getIntent().getParcelableExtra("THE_DATA"));
 
+        FetchVideoTask fetchVideoTask = new FetchVideoTask();
+        fetchVideoTask.execute(movieInfo.mId);
+
         int divisor;
+
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             divisor = 2;
         }
@@ -192,4 +213,145 @@ public class DetailActivity extends AppCompatActivity {
         TextView tvOverview = (TextView) findViewById(R.id.detail_overview);
         tvOverview.setText(movieInfo.mOverview);
     }
+
+    public class FetchVideoTask extends AsyncTask<String, Void, String[][]> {
+
+        private final String LOG_TAG = FetchVideoTask.class.getSimpleName();
+
+        private String[][] getVideoDataFromJson(String videoJsonStr)
+                throws JSONException {
+
+            // These are the names of the JSON objects that need to be extracted.
+            final String TMDB_RESULTS = "results";
+            final String TMDB_KEY = "key";
+            final String TMDB_NAME = "name";
+            final String TMDB_SITE = "site";
+            final String TMDB_TYPE = "type";
+
+            JSONObject videoJson = new JSONObject(videoJsonStr);
+            JSONArray videoArray = videoJson.getJSONArray(TMDB_RESULTS);
+
+            int videoArrayLength = videoArray.length();
+
+            String[][] resultStrs = new String[videoArrayLength][4];
+
+            for (int i = 0; i < videoArrayLength; i++) {
+                // Get the JSON object representing an individual movie
+                JSONObject individualVideo = videoArray.getJSONObject(i);
+
+                resultStrs[i][0] = individualVideo.getString(TMDB_KEY);
+                resultStrs[i][1] = individualVideo.getString(TMDB_NAME);
+                resultStrs[i][2] = individualVideo.getString(TMDB_SITE);
+                resultStrs[i][3] = individualVideo.getString(TMDB_TYPE);
+            }
+            return resultStrs;
+        }
+
+        @Override
+        protected String[][] doInBackground(String... params) {
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr;
+
+            try {
+                // Construct the URL
+                final String MOVIE_BASE_URL =
+                        "http://api.themoviedb.org/3/movie/" + params[0] + "/videos" + "?";
+                final String APIKEY_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                // Create the request and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line);
+                    buffer.append("\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                movieJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the data, there's no point in attempting
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            try {
+                return getVideoDataFromJson(movieJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing.
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[][] result) {
+            if (result != null) {
+                mMovieVideos = result;
+                // New data is back from the server.  Hooray!
+                showVideos();
+            }
+        }
+
+    }
+
+    private void showVideos(){
+        Button bVideo = (Button) findViewById(R.id.detail_video_button);
+        bVideo.setText(mMovieVideos[0][1]);
+    }
+
+    public void youTube(View view) {
+        Uri uri = Uri.parse("vnd.youtube:"  + mMovieVideos[0][0]);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
+    private void showReviews(String[][] movieReviews){
+
+    }
+
 }
