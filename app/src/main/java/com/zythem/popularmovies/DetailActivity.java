@@ -59,6 +59,9 @@ public class DetailActivity extends AppCompatActivity {
         FetchVideoTask fetchVideoTask = new FetchVideoTask();
         fetchVideoTask.execute(movieInfo.mId);
 
+        FetchReviewTask fetchReviewTask = new FetchReviewTask();
+        fetchReviewTask.execute(movieInfo.mId);
+
         int divisor;
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
@@ -372,7 +375,145 @@ public class DetailActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void showReviews(String[][] movieReviews){
+    public class FetchReviewTask extends AsyncTask<String, Void, String[][]> {
+
+        private final String LOG_TAG = FetchReviewTask.class.getSimpleName();
+
+        private String[][] getReviewDataFromJson(String reviewJsonStr)
+                throws JSONException {
+
+            // These are the names of the JSON objects that need to be extracted.
+            final String TMDB_RESULTS = "results";
+            final String TMDB_AUTHOR = "author";
+            final String TMDB_CONTENT = "content";
+
+            JSONObject reviewJson = new JSONObject(reviewJsonStr);
+            JSONArray reviewArray = reviewJson.getJSONArray(TMDB_RESULTS);
+
+            int reviewArrayLength = reviewArray.length();
+
+            String[][] resultStrs = new String[reviewArrayLength][2];
+
+            for (int i = 0; i < reviewArrayLength; i++) {
+                // Get the JSON object representing an individual movie
+                JSONObject individualReview = reviewArray.getJSONObject(i);
+
+                resultStrs[i][0] = individualReview.getString(TMDB_AUTHOR);
+                resultStrs[i][1] = individualReview.getString(TMDB_CONTENT);
+            }
+            return resultStrs;
+        }
+
+        @Override
+        protected String[][] doInBackground(String... params) {
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr;
+
+            try {
+                // Construct the URL
+                final String MOVIE_BASE_URL =
+                        "http://api.themoviedb.org/3/movie/" + params[0] + "/reviews" + "?";
+                final String APIKEY_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                // Create the request and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line);
+                    buffer.append("\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                movieJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the data, there's no point in attempting
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            try {
+                return getReviewDataFromJson(movieJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing.
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[][] result) {
+            if (result != null) {
+                mMovieReviews = result;
+                // New data is back from the server.  Hooray!
+                showReviews();
+            }
+        }
+
+    }
+
+
+    private void showReviews(){
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.detail_reviews_layout);
+
+        if (mMovieReviews.length == 0) {
+            TextView tv = new TextView(this);
+            tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            tv.setText(getApplicationContext().getString(R.string.none));
+            linearLayout.addView(tv);
+        } else {
+            for (int i = 0; i < mMovieReviews.length; i++) {
+                TextView tv = new TextView(this);
+                tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                tv.setText(mMovieReviews[i][1] + "\n--" + mMovieReviews[i][0] + "\n");
+                linearLayout.addView(tv);
+            }
+        }
 
     }
 
