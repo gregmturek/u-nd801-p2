@@ -85,12 +85,6 @@
                 android:textSize="@dimen/heading_text_size"
                 android:text="@string/videos"/>
 
-            <Button
-                android:id="@+id/detail_video_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="youTube"/>
-
         </LinearLayout>
 
         <LinearLayout

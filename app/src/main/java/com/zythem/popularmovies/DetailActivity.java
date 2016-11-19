@@ -21,6 +21,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -233,7 +234,7 @@ public class DetailActivity extends AppCompatActivity {
 
             int videoArrayLength = videoArray.length();
 
-            String[][] resultStrs = new String[videoArrayLength][4];
+            String[][] resultStrs = new String[videoArrayLength][3];
 
             for (int i = 0; i < videoArrayLength; i++) {
                 // Get the JSON object representing an individual movie
@@ -242,7 +243,6 @@ public class DetailActivity extends AppCompatActivity {
                 resultStrs[i][0] = individualVideo.getString(TMDB_KEY);
                 resultStrs[i][1] = individualVideo.getString(TMDB_NAME);
                 resultStrs[i][2] = individualVideo.getString(TMDB_SITE);
-                resultStrs[i][3] = individualVideo.getString(TMDB_TYPE);
             }
             return resultStrs;
         }
@@ -338,14 +338,36 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    private void showVideos(){
-        Button bVideo = (Button) findViewById(R.id.detail_video_button);
-        bVideo.setText(mMovieVideos[0][1]);
+    private void showVideos() {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.detail_videos_layout);
+
+        if (mMovieVideos.length == 0) {
+            TextView tv = new TextView(this);
+            tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            tv.setText(getApplicationContext().getString(R.string.none));
+            linearLayout.addView(tv);
+        } else {
+            for (int i = 0; i < mMovieVideos.length; i++) {
+                if (mMovieVideos[i][2].equals("YouTube")) {
+                    final int index = i;
+                    Button bVideo = new Button(this);
+                    bVideo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+                    bVideo.setText(mMovieVideos[i][1]);
+                    bVideo.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            youTube(index);
+                        }
+                    });
+                    linearLayout.addView(bVideo);
+                }
+            }
+        }
     }
 
-    public void youTube(View view) {
-        Uri uri = Uri.parse("vnd.youtube:"  + mMovieVideos[0][0]);
-
+    public void youTube(int index) {
+        Uri uri = Uri.parse("vnd.youtube:" + mMovieVideos[index][0]);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }
