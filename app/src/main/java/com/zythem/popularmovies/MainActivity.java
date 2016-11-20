@@ -43,6 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static com.zythem.popularmovies.MovieContentProvider.AUTHORITY;
 import static com.zythem.popularmovies.R.id.container;
 
 public class MainActivity extends AppCompatActivity {
@@ -140,49 +141,6 @@ public class MainActivity extends AppCompatActivity {
             return fragment;
         }
 
-         public void storeAllData(String[][] movieData) {
-            Log.d(LOG_TAG, "insert all");
-
-            ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movieData.length);
-
-            switch (mTabNum) {
-                case 1:
-                    for (String[] movie : movieData) {
-                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                                MovieContentProvider.MostPopular.MOVIES);
-                        builder.withValue(MostPopularColumns.MOVIE_TITLE, movie[0]);
-                        builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH, movie[1]);
-                        builder.withValue(MostPopularColumns.MOVIE_DATE, movie[2]);
-                        builder.withValue(MostPopularColumns.MOVIE_RATING, movie[3]);
-                        builder.withValue(MostPopularColumns.MOVIE_ID, movie[4]);
-                        builder.withValue(MostPopularColumns.MOVIE_OVERVIEW, movie[5]);
-                        builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH_2, movie[6]);
-                        batchOperations.add(builder.build());
-                    }
-                    break;
-                case 2:
-                    for (String[] movie : movieData) {
-                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                                MovieContentProvider.TopRated.MOVIES);
-                        builder.withValue(TopRatedColumns.MOVIE_TITLE, movie[0]);
-                        builder.withValue(TopRatedColumns.MOVIE_IMAGEPATH, movie[1]);
-                        builder.withValue(TopRatedColumns.MOVIE_DATE, movie[2]);
-                        builder.withValue(TopRatedColumns.MOVIE_RATING, movie[3]);
-                        builder.withValue(TopRatedColumns.MOVIE_ID, movie[4]);
-                        builder.withValue(TopRatedColumns.MOVIE_OVERVIEW, movie[5]);
-                        builder.withValue(TopRatedColumns.MOVIE_IMAGEPATH_2, movie[6]);
-                        batchOperations.add(builder.build());
-                    }
-                    break;
-            }
-
-            try{
-                getActivity().getContentResolver().applyBatch(MovieContentProvider.AUTHORITY, batchOperations);
-            } catch(RemoteException | OperationApplicationException e){
-                Log.e(LOG_TAG, "Error applying batch insert all", e);
-            }
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -216,52 +174,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onActivityCreated(Bundle savedInstanceState){
-
-            SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
-            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
-            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
-
-            Cursor c = null;
-
             switch (mTabNum) {
                 case 1:
-                    // TODO: If 24 hours/new day then delete the data from table
-                    try {
-                        c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
-                                null, null, null, null);
-
-                        if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20) {
-                            getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
-                            FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
-                            fetchMostPopularTask.execute("popular", pages);
-                        }
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG, "Error ", e);
-                    } finally {
-                        if(c != null){
-                            c.close();
-                        }
-                    }
+                    refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES, MovieContentProvider.Path.MOST_POPULAR);
                     break;
                 case 2:
-                    try {
-                        // TODO: If 24 hours/new day then delete the data from table
-                        c = getActivity().getContentResolver().query(MovieContentProvider.TopRated.MOVIES,
-                                null, null, null, null);
-                        if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20) {
-                            getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
-                            FetchMovieTask fetchTopRatedTask = new FetchMovieTask();
-                            fetchTopRatedTask.execute("top_rated", pages);
-                        }
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG, "Error ", e);
-                    } finally {
-                        if(c != null){
-                            c.close();
-                        }
-                    }
-                    break;
-                case 3:
+                    refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES, MovieContentProvider.Path.TOP_RATED);
                     break;
             }
 
@@ -270,6 +188,68 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityCreated(savedInstanceState);
         }
 
+        public void refetchDataIfNecessary(Uri uriType, String pathType) {
+            SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
+            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
+            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
+
+            Cursor c = null;
+
+            try {
+                c = getActivity().getContentResolver().query(uriType,
+                        null, null, null, null);
+
+                // TODO: If 24 hours/new day then delete the data from all tables
+
+                if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20) {
+                    getActivity().getContentResolver().delete(uriType, null, null);
+                    FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
+                    fetchMostPopularTask.execute(pathType, pages);
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error ", e);
+            } finally {
+                if(c != null){
+                    c.close();
+                }
+            }
+            
+        }
+
+        public void storeAllData(String[][] movieData) {
+            Log.d(LOG_TAG, "insert all");
+
+            ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movieData.length);
+            Uri uriType = null;
+
+            switch (mTabNum) {
+                case 1:
+                    uriType = MovieContentProvider.MostPopular.MOVIES;
+                    break;
+                case 2:
+                    uriType = MovieContentProvider.TopRated.MOVIES;
+                    break;
+            }
+
+            for (String[] movie : movieData) {
+                ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                        uriType);
+                builder.withValue(MostPopularColumns.MOVIE_TITLE, movie[0]);
+                builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH, movie[1]);
+                builder.withValue(MostPopularColumns.MOVIE_DATE, movie[2]);
+                builder.withValue(MostPopularColumns.MOVIE_RATING, movie[3]);
+                builder.withValue(MostPopularColumns.MOVIE_ID, movie[4]);
+                builder.withValue(MostPopularColumns.MOVIE_OVERVIEW, movie[5]);
+                builder.withValue(MostPopularColumns.MOVIE_IMAGEPATH_2, movie[6]);
+                batchOperations.add(builder.build());
+            }
+
+            try{
+                getActivity().getContentResolver().applyBatch(AUTHORITY, batchOperations);
+            } catch(RemoteException | OperationApplicationException e){
+                Log.e(LOG_TAG, "Error applying batch insert all", e);
+            }
+        }
 
         @Override
         public void onResume() {

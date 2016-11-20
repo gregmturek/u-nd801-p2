@@ -13,7 +13,7 @@ public final class MovieContentProvider {
     public static final String AUTHORITY = "com.zythem.popularmovies.MovieContentProvider";
 
     interface Path{
-        String MOST_POPULAR = "most_popular";
+        String MOST_POPULAR = "popular";
         String TOP_RATED = "top_rated";
         String FAVORITE = "favorite";
     }
