@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -507,10 +508,29 @@ public class DetailActivity extends AppCompatActivity {
             linearLayout.addView(tv);
         } else {
             for (int i = 0; i < mMovieReviews.length; i++) {
+                if (i > 0) {
+                    Configuration config = getResources().getConfiguration();
+                    int screenWidthDp = config.screenWidthDp;
+                    int screenWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                            screenWidthDp, getResources().getDisplayMetrics());
+                    int dividerHeightPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                            getResources().getDimension(R.dimen.text_divider_height),
+                            getResources().getDisplayMetrics());
+                    int dividerMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                            getResources().getDimension(R.dimen.text_divider_margin),
+                            getResources().getDisplayMetrics());
+
+                    ImageView iv = new ImageView(this);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(screenWidthPx, dividerHeightPx);
+                    lp.setMargins(0, dividerMarginPx, 0, dividerMarginPx);
+                    iv.setLayoutParams(lp);
+                    iv.setBackgroundColor(Color.LTGRAY);
+                    linearLayout.addView(iv);
+                }
                 TextView tv = new TextView(this);
                 tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
-                tv.setText(mMovieReviews[i][1] + "\n--" + mMovieReviews[i][0] + "\n");
+                tv.setText(mMovieReviews[i][1] + "\n--" + mMovieReviews[i][0]);
                 linearLayout.addView(tv);
             }
         }
