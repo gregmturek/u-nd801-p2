@@ -189,9 +189,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void refetchDataIfNecessary(Uri uriType, String pathType) {
-            SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getContext());
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
             String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
             String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
+
+            long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
+            long updateDate = sharedPref.getLong("last_update", 0);
+            long currentDate = System.currentTimeMillis() / MILLIS_PER_DAY;
+            Boolean needUpdate = false;
+            if (updateDate != currentDate) {
+                needUpdate = true;
+            }
 
             Cursor c = null;
 
@@ -199,12 +208,16 @@ public class MainActivity extends AppCompatActivity {
                 c = getActivity().getContentResolver().query(uriType,
                         null, null, null, null);
 
-                // TODO: If 24 hours/new day then delete the data from all tables
+                if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20 || needUpdate) {
+                    getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
+                    getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
 
-                if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20) {
-                    getActivity().getContentResolver().delete(uriType, null, null);
-                    FetchMovieTask fetchMostPopularTask = new FetchMovieTask();
-                    fetchMostPopularTask.execute(pathType, pages);
+                    FetchMovieTask fetchMovieTask = new FetchMovieTask();
+                    fetchMovieTask.execute(pathType, pages);
+
+                    SharedPreferences.Editor edit = sharedPref.edit();
+                    edit.putLong("last_update", currentDate);
+                    edit.apply();
                 }
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -213,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
                     c.close();
                 }
             }
-            
         }
 
         public void storeAllData(String[][] movieData) {
