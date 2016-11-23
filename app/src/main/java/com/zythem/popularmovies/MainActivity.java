@@ -165,12 +165,6 @@ public class MainActivity extends AppCompatActivity {
             mRv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
             mRv.setHasFixedSize(true);
 
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
-            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
-
-            mRv.setItemViewCacheSize(Integer.parseInt(pages) * 20);
-
             mGlm = new PreCachingGridLayoutManager(getActivity(), cardsInRow);
             DisplayMetrics displayMetrics = new DisplayMetrics();
             WindowManager windowmanager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -331,8 +325,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data){
             mCursorAdapter.swapCursor(data);
-
-
         }
 
         @Override

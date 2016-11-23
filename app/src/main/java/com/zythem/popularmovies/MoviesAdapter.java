@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -106,8 +105,6 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
         holder.mTextViewTitle.getLayoutParams().height = mCardImageHeight;
         holder.mImageView.getLayoutParams().width = mCardImageWidth;
         holder.mImageView.getLayoutParams().height = mCardImageHeight;
-
-        DatabaseUtils.dumpCursor(cursor);
 
         MovieDataToPass data = new MovieDataToPass();
 
