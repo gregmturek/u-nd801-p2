@@ -1,6 +1,7 @@
 package com.zythem.popularmovies;
 
 import android.content.ContentProviderOperation;
+import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
@@ -24,12 +25,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,7 +126,9 @@ public class MainActivity extends AppCompatActivity {
 
         private MoviesAdapter mCursorAdapter;
         private RecyclerView mRv;
-        private GridLayoutManager mGlm;
+
+        private PreCachingGridLayoutManager mGlm;
+
         private String[][] mMovieData;
 
         public TabFragment() {
@@ -159,10 +164,24 @@ public class MainActivity extends AppCompatActivity {
 
             mRv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
             mRv.setHasFixedSize(true);
-            mRv.setItemViewCacheSize(16);
 
-            mGlm = new GridLayoutManager(getActivity(), cardsInRow);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
+            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
+
+            mRv.setItemViewCacheSize(Integer.parseInt(pages) * 20);
+
+            mGlm = new PreCachingGridLayoutManager(getActivity(), cardsInRow);
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            WindowManager windowmanager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
+            int deviceWidth = displayMetrics.widthPixels;
+            int deviceHeight = displayMetrics.heightPixels;
+            int extraPixels = Math.max(deviceHeight, deviceWidth);
+            mGlm.setExtraLayoutSpace(extraPixels);
+
             mRv.setLayoutManager(mGlm);
+
 
             mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
 
@@ -170,6 +189,23 @@ public class MainActivity extends AppCompatActivity {
             mRv.setAdapter(mCursorAdapter);
 
             return rootView;
+        }
+
+        public class PreCachingGridLayoutManager extends GridLayoutManager {
+            private int extraLayoutSpace;
+
+            public PreCachingGridLayoutManager(Context context, int spanCount) {
+                super(context, spanCount);
+            }
+
+            public void setExtraLayoutSpace(int extraLayoutSpace) {
+                this.extraLayoutSpace = extraLayoutSpace;
+            }
+
+            @Override
+            protected int getExtraLayoutSpace(RecyclerView.State state) {
+                return extraLayoutSpace;
+            }
         }
 
         @Override
