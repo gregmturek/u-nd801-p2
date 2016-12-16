@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -22,6 +24,7 @@ import org.parceler.Parcels;
 class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> {
     private Context mContext;
     private int mTabNum;
+    private static boolean mTwoPane;
 
     private int mCardImageWidth;
     private int mCardImageHeight;
@@ -50,20 +53,31 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                    MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
-                    intent.putExtra("THE_DATA", Parcels.wrap(movieInfo));
-                    v.getContext().startActivity(intent);
+                    if(mTwoPane) {
+                        MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("THE_DATA", Parcels.wrap(movieInfo));
+
+                        ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, DetailFragment.newInstance(bundle))
+                                .commit();
+                    } else {
+                        Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                        MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
+                        intent.putExtra("THE_DATA", Parcels.wrap(movieInfo));
+                        v.getContext().startActivity(intent);
+                    }
                 }
             });
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    MoviesAdapter(Context context, Cursor cursor, int tabNum) {
+    MoviesAdapter(Context context, Cursor cursor, int tabNum, boolean twoPane) {
         super(context, cursor);
         mContext = context;
         mTabNum = tabNum;
+        mTwoPane = twoPane;
 
         int cardsInRowPortrait = context.getResources().getInteger(R.integer.cards_in_row_portrait);
         int cardsInRowLandscape = context.getResources().getInteger(R.integer.cards_in_row_landscape);

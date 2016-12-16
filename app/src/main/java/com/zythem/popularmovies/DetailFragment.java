@@ -96,11 +96,26 @@ public class DetailFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        boolean mTwoPane;
+
         FetchVideoTask fetchVideoTask = new FetchVideoTask();
         fetchVideoTask.execute(mMovieInfo.mId);
 
         FetchReviewTask fetchReviewTask = new FetchReviewTask();
         fetchReviewTask.execute(mMovieInfo.mId);
+
+        if (getActivity().findViewById(R.id.fragment_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+        } else {
+            mTwoPane = false;
+        }
 
         int divisor;
 
@@ -118,7 +133,8 @@ public class DetailFragment extends Fragment {
 
         appbarImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, appbarImageHeight, getResources().getDisplayMetrics());
 
-        AppBarLayout appbar = (AppBarLayout) view.findViewById(R.id.app_bar);
+        AppBarLayout appbar = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
+
         appbar.getLayoutParams().height = appbarImageHeight;
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -187,7 +203,9 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        getActivity().setTitle(mMovieInfo.mTitle);
+        if (!mTwoPane) {
+            getActivity().setTitle(mMovieInfo.mTitle);
+        }
 
         SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
@@ -218,7 +236,7 @@ public class DetailFragment extends Fragment {
         TextView tvDate = (TextView) view.findViewById(R.id.detail_date);
         TextView tvRating = (TextView) view.findViewById(R.id.detail_rating);
 
-        if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && images) {
+        if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && images && !mTwoPane) {
             Picasso.with(getContext())
                     .load(mMovieInfo.mImagepath)
                     .noFade()
@@ -405,7 +423,7 @@ public class DetailFragment extends Fragment {
                 if (mMovieVideos[i][2].equals("YouTube")) {
                     final int index = i;
                     Button bVideo = new Button(getContext());
-                    bVideo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    bVideo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
                     bVideo.setText(mMovieVideos[i][1]);
                     bVideo.setOnClickListener(new View.OnClickListener() {

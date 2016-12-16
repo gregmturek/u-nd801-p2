@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    public Boolean mTwoPane;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +85,21 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        if (findViewById(R.id.fragment_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+        } else {
+            mTwoPane = false;
+        }
+
+
     }
 
     @Override
@@ -121,8 +139,11 @@ public class MainActivity extends AppCompatActivity {
         private static final String LOG_TAG = TabFragment.class.getSimpleName();
         private static final int CURSOR_LOADER_ID = 0;
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_TWO_PANE = "two_pane";
+
 
         private int mTabNum;
+        private boolean mTwoPane;
 
         private MoviesAdapter mCursorAdapter;
         private RecyclerView mRv;
@@ -138,10 +159,11 @@ public class MainActivity extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static TabFragment newInstance(int sectionNumber) {
+        public static TabFragment newInstance(int sectionNumber, boolean twoPane) {
             TabFragment fragment = new TabFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putBoolean(ARG_TWO_PANE, twoPane);
             fragment.setArguments(args);
             return fragment;
         }
@@ -153,11 +175,17 @@ public class MainActivity extends AppCompatActivity {
             int cardsInRowLandscape = getResources().getInteger(R.integer.cards_in_row_landscape);
             int cardsInRow;
 
+            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
+            mTwoPane = getArguments().getBoolean(ARG_TWO_PANE);
+
             if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
                 cardsInRow = cardsInRowPortrait;
             }
             else{
                 cardsInRow = cardsInRowLandscape;
+            }
+            if(mTwoPane) {
+                cardsInRow /= 2;
             }
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -176,10 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
             mRv.setLayoutManager(mGlm);
 
-
-            mTabNum = getArguments().getInt(ARG_SECTION_NUMBER);
-
-            mCursorAdapter = new MoviesAdapter(getActivity(), null, mTabNum);
+            mCursorAdapter = new MoviesAdapter(getActivity(), null, mTabNum, mTwoPane);
             mRv.setAdapter(mCursorAdapter);
 
             return rootView;
@@ -493,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a TabFragment (defined as a static inner class below).
-            return TabFragment.newInstance(position + 1);
+            return TabFragment.newInstance(position + 1, mTwoPane);
         }
 
         @Override
