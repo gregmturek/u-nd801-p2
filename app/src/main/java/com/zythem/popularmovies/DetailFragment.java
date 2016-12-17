@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import static com.zythem.popularmovies.R.id.app_bar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -127,7 +130,7 @@ public class DetailFragment extends Fragment {
 
         appbarImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, appbarImageHeight, getResources().getDisplayMetrics());
 
-        AppBarLayout appbar = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
+        AppBarLayout appbar = (AppBarLayout) getActivity().findViewById(app_bar);
 
         appbar.getLayoutParams().height = appbarImageHeight;
 
@@ -197,9 +200,9 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        if (!mTwoPane) {
-            getActivity().setTitle(mMovieInfo.mTitle);
-        }
+            CollapsingToolbarLayout collapsingToolbar =
+                    (CollapsingToolbarLayout) view.findViewById(R.id.toolbar_layout);
+            collapsingToolbar.setTitle(mMovieInfo.mTitle);
 
         SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
