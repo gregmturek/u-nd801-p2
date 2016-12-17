@@ -52,10 +52,12 @@ import java.net.URL;
  */
 public class DetailFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "THE_DATA";
+    private static final String ARG_MOVIE_INFO = "THE_DATA";
+    private static final String ARG_TWO_PANE = "two_pane";
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private MovieDataToPass mMovieInfo;
+    private boolean mTwoPane;
 
     String[][] mMovieVideos;
     String[][] mMovieReviews;
@@ -68,12 +70,13 @@ public class DetailFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param args Parameter 1.
      * @return A new instance of fragment DetailFragment.
      */
-    public static DetailFragment newInstance(Bundle param1) {
+    public static DetailFragment newInstance(Bundle args, boolean twoPane) {
         DetailFragment fragment = new DetailFragment();
-        fragment.setArguments(param1);
+        args.putBoolean(ARG_TWO_PANE, twoPane);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -81,7 +84,9 @@ public class DetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mMovieInfo = Parcels.unwrap(getArguments().getParcelable(ARG_PARAM1));
+            mMovieInfo = Parcels.unwrap(getArguments().getParcelable(ARG_MOVIE_INFO));
+            mTwoPane = getArguments().getBoolean(ARG_TWO_PANE);
+
         }
     }
 
@@ -96,26 +101,11 @@ public class DetailFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        boolean mTwoPane;
-
         FetchVideoTask fetchVideoTask = new FetchVideoTask();
         fetchVideoTask.execute(mMovieInfo.mId);
 
         FetchReviewTask fetchReviewTask = new FetchReviewTask();
         fetchReviewTask.execute(mMovieInfo.mId);
-
-        if (getActivity().findViewById(R.id.fragment_container) != null) {
-            // The detail container view will be present only in the large-screen layouts
-            // (res/layout-sw600dp). If this view is present, then the activity should be
-            // in two-pane mode.
-            mTwoPane = true;
-
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
-        } else {
-            mTwoPane = false;
-        }
 
         int divisor;
 
@@ -129,9 +119,13 @@ public class DetailFragment extends Fragment {
         Configuration config = getResources().getConfiguration();
         int screenHeightDp = config.screenHeightDp;
 
+        if(mTwoPane) {
+            screenHeightDp /= 2;
+        }
+
         int appbarImageHeight = screenHeightDp / divisor;
 
-        appbarImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, appbarImageHeight, getResources().getDisplayMetrics());
+        appbarImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, appbarImageHeight, getResources().getDisplayMetrics());
 
         AppBarLayout appbar = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 

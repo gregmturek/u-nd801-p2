@@ -32,7 +32,7 @@ public class DetailActivity extends AppCompatActivity {
             bundle.putParcelable("THE_DATA", Parcels.wrap(movieInfo));
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, DetailFragment.newInstance(bundle))
+                    .add(R.id.fragment_container, DetailFragment.newInstance(bundle, false))
                     .commit();
         }
     }

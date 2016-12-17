@@ -59,7 +59,7 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                         bundle.putParcelable("THE_DATA", Parcels.wrap(movieInfo));
 
                         ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, DetailFragment.newInstance(bundle))
+                                .replace(R.id.fragment_container, DetailFragment.newInstance(bundle, true))
                                 .commit();
                     } else {
                         Intent intent = new Intent(v.getContext(), DetailActivity.class);
