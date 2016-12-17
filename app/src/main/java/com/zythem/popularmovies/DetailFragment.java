@@ -19,6 +19,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -275,9 +276,11 @@ public class DetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        if(((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
+        ActionBar actionBar = appCompatActivity.getSupportActionBar();
+        appCompatActivity.setSupportActionBar(toolbar);
+        if(actionBar != null && !mTwoPane) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
