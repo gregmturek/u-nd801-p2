@@ -37,6 +37,7 @@ import android.view.WindowManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
 
-    private static final String DETAILFRAGMENT_TAG = "DFTAG";
     public Boolean mTwoPane;
 
     @Override
@@ -100,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public void loadTabletDetailFragment(MovieDataToPass movieInfo) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("THE_DATA", Parcels.wrap(movieInfo));
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, DetailFragment.newInstance(bundle, true))
+                .commit();
     }
 
     @Override
@@ -241,6 +250,39 @@ public class MainActivity extends AppCompatActivity {
             getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
             super.onActivityCreated(savedInstanceState);
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            if (mTwoPane && mTabNum == 1 && getActivity().findViewById(R.id.detail_videos_layout) == null) {
+                MovieDataToPass movieInfo = new MovieDataToPass();
+                Cursor c = null;
+                try {
+                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
+                            null, null, null, null);
+
+                    if(c != null) {
+                        c.moveToFirst();
+
+                        movieInfo.mTitle = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
+                        movieInfo.mImagepath = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
+                        movieInfo.mDate = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_DATE));
+                        movieInfo.mRating = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_RATING));
+                        movieInfo.mId = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_ID));
+                        movieInfo.mOverview = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
+                        movieInfo.mImagepath2 = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
+
+                        ((MainActivity)getActivity()).loadTabletDetailFragment(movieInfo);
+                    }
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error ", e);
+                } finally {
+                    if(c != null){
+                        c.close();
+                    }
+                }
+            }
         }
 
         public void refetchDataIfNecessary(Uri uriType, String pathType) {
