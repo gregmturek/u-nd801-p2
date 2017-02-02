@@ -2,7 +2,6 @@ package com.zythem.popularmovies;
 
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -27,7 +26,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -268,7 +266,6 @@ public class DetailFragment extends Fragment {
 
         TextView tvOverview = (TextView) view.findViewById(R.id.detail_overview);
         tvOverview.setText(mMovieInfo.mOverview);
-
     }
 
     @Override
@@ -283,8 +280,6 @@ public class DetailFragment extends Fragment {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
-
-
 
     public class FetchVideoTask extends AsyncTask<String, Void, String[][]> {
 
@@ -406,7 +401,6 @@ public class DetailFragment extends Fragment {
                 showVideos();
             }
         }
-
     }
 
     private void showVideos() {
@@ -421,26 +415,18 @@ public class DetailFragment extends Fragment {
         } else {
             for (int i = 0; i < mMovieVideos.length; i++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
-                    final int index = i;
-                    Button bVideo = new Button(getContext());
-                    bVideo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT));
-                    bVideo.setText(mMovieVideos[i][1]);
-                    bVideo.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            youTube(index);
-                        }
-                    });
-                    linearLayout.addView(bVideo);
+                    YouTubePreview youTubePreview = new YouTubePreview(getContext());
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(0, (int) getResources().getDimension(R.dimen.normal_layout_margin),
+                            0,  (int) getResources().getDimension(R.dimen.normal_layout_margin));
+                    youTubePreview.setLayoutParams(lp);
+                    youTubePreview.setContent(mMovieVideos[i][0], mMovieVideos[i][1],
+                            getResources().getDimension(R.dimen.subheading_text_size));
+                    linearLayout.addView(youTubePreview);
                 }
             }
         }
-    }
-
-    public void youTube(int index) {
-        Uri uri = Uri.parse("vnd.youtube:" + mMovieVideos[index][0]);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
     }
 
     public class FetchReviewTask extends AsyncTask<String, Void, String[][]> {
@@ -560,9 +546,7 @@ public class DetailFragment extends Fragment {
                 showReviews();
             }
         }
-
     }
-
 
     private void showReviews(){
         LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_reviews_layout);
@@ -601,8 +585,5 @@ public class DetailFragment extends Fragment {
                 linearLayout.addView(tv);
             }
         }
-
     }
-
-
 }
