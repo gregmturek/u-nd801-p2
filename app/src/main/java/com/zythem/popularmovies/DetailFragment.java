@@ -88,7 +88,6 @@ public class DetailFragment extends Fragment {
         if (getArguments() != null) {
             mMovieInfo = Parcels.unwrap(getArguments().getParcelable(ARG_MOVIE_INFO));
             mTwoPane = getArguments().getBoolean(ARG_TWO_PANE);
-
         }
     }
 
@@ -274,8 +273,8 @@ public class DetailFragment extends Fragment {
 
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
-        ActionBar actionBar = appCompatActivity.getSupportActionBar();
         appCompatActivity.setSupportActionBar(toolbar);
+        ActionBar actionBar = appCompatActivity.getSupportActionBar();
         if(actionBar != null && !mTwoPane) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
