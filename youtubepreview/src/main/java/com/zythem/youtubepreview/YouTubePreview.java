@@ -1,4 +1,4 @@
-package com.zythem.popularmovies;
+package com.zythem.youtubepreview;
 
 import android.content.Context;
 import android.content.Intent;
