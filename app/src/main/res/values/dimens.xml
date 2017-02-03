@@ -35,4 +35,5 @@
     <dimen name="text_divider_margin">2dp</dimen>
 
     <dimen name="ytp_stroke_width">8dp</dimen>
+    <dimen name="ytp_padding">8dp</dimen>
 </resources>

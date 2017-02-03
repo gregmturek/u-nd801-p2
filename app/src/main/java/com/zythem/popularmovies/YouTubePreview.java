@@ -2,7 +2,6 @@ package com.zythem.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -97,26 +96,23 @@ public class YouTubePreview extends RelativeLayout implements ViewTreeObserver.O
     public void onGlobalLayout() {
         mContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-        mWidth = mView.getMeasuredWidth();
-
         TextView tv = (TextView) findViewById(R.id.youtube_preview_tv_movie_title);
         if (mTextSize > 0) {
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
         }
         tv.setText(mVideoTitle);
 
-        int divisor;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            divisor = 1;
+        int ivImageWidth = mView.getMeasuredWidth() - (int) getResources().getDimension(R.dimen.ytp_padding) * 2;
+        int ivImageHeight = mView.getMeasuredHeight() - (int) getResources().getDimension(R.dimen.ytp_padding) * 2;
+        if (ivImageHeight < Math.round(ivImageWidth * 3 / 4)) {
+            ivImageHeight = Math.round(ivImageWidth * 3 / 4);
         }
-        else {
-            divisor = 2;
+        if (ivImageWidth < Math.round(ivImageHeight * 4 / 3)) {
+            ivImageWidth = Math.round(ivImageHeight * 4 / 3);
         }
-
-        int ivImageWidth = (mWidth / divisor);
 
         mWidth = ivImageWidth;
-        mHeight = Math.round(ivImageWidth * 3 / 4);
+        mHeight = ivImageHeight;
 
         ImageView ivThumb = (ImageView) findViewById(R.id.youtube_preview_iv_thumb);
         ivThumb.getLayoutParams().width = mWidth;
@@ -136,7 +132,7 @@ public class YouTubePreview extends RelativeLayout implements ViewTreeObserver.O
         ivThumbOverlay.setImageBitmap(bitmap);
 
         mWidth = ivImageWidth / 3;
-        mHeight = Math.round((ivImageWidth / 3) * 3 / 4);
+        mHeight = ivImageHeight / 3;
 
         final ImageView iv1 = (ImageView) findViewById(R.id.youtube_preview_iv_1);
         iv1.getLayoutParams().width = mWidth;

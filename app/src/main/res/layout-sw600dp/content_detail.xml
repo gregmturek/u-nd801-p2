@@ -71,6 +71,7 @@
             android:layout_below="@+id/detail_overview_heading"/>
 
         <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/detail_videos_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
