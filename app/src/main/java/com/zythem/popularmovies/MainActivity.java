@@ -45,7 +45,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import static com.zythem.popularmovies.MovieContentProvider.AUTHORITY;
 import static com.zythem.popularmovies.R.id.container;
@@ -439,7 +444,17 @@ public class MainActivity extends AppCompatActivity {
 
                         resultStrs[(j*movieArrayLength)+i][0] = individualMovie.getString(TMDB_TITLE);
                         resultStrs[(j*movieArrayLength)+i][1] = "http://image.tmdb.org/t/p/w342/" + individualMovie.getString(TMDB_IMAGEPATH);
-                        resultStrs[(j*movieArrayLength)+i][2] = individualMovie.getString(TMDB_DATE);
+
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.US);
+                        String date = individualMovie.getString(TMDB_DATE);
+                        try {
+                            Date parsedDate = inputFormat.parse(date);
+                            date = DateFormat.getDateInstance(DateFormat.SHORT).format(parsedDate);
+                        } catch (ParseException e) {
+                            Log.e(LOG_TAG, "Error ", e);
+                        }
+
+                        resultStrs[(j*movieArrayLength)+i][2] = date;
                         resultStrs[(j*movieArrayLength)+i][3] = individualMovie.getString(TMDB_RATING) + "/10";
                         resultStrs[(j*movieArrayLength)+i][4] = individualMovie.getString(TMDB_ID);
                         resultStrs[(j*movieArrayLength)+i][5] = individualMovie.getString(TMDB_OVERVIEW);
