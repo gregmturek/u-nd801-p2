@@ -26,6 +26,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -61,6 +62,7 @@ public class DetailFragment extends Fragment {
 
     private MovieDataToPass mMovieInfo;
     private boolean mTwoPane;
+    private boolean mImages;
 
     String[][] mMovieVideos;
     String[][] mMovieReviews;
@@ -205,10 +207,10 @@ public class DetailFragment extends Fragment {
 
         SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
-        boolean images = sharedPref.getBoolean("images_switch", defaultValue);
+        mImages = sharedPref.getBoolean("images_switch", defaultValue);
 
         ImageView ivImagepath2 = (ImageView) view.findViewById(R.id.detail_imagepath2);
-        if (mMovieInfo.mImagepath2 != null && !mMovieInfo.mImagepath2.isEmpty() && images) {
+        if (mMovieInfo.mImagepath2 != null && !mMovieInfo.mImagepath2.isEmpty() && mImages) {
             Picasso.with(getContext())
                     .load(mMovieInfo.mImagepath2)
                     .into(ivImagepath2);
@@ -232,7 +234,7 @@ public class DetailFragment extends Fragment {
         TextView tvDate = (TextView) view.findViewById(R.id.detail_date);
         TextView tvRating = (TextView) view.findViewById(R.id.detail_rating);
 
-        if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && images && !mTwoPane) {
+        if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && mImages && !mTwoPane) {
             Picasso.with(getContext())
                     .load(mMovieInfo.mImagepath)
                     .noFade()
@@ -415,15 +417,30 @@ public class DetailFragment extends Fragment {
         } else {
             for (int i = 0; i < mMovieVideos.length; i++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
-                    YouTubePreview youTubePreview = new YouTubePreview(getContext());
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    lp.setMargins(0, (int) getResources().getDimension(R.dimen.normal_layout_margin),
-                            0,  (int) getResources().getDimension(R.dimen.normal_layout_margin));
-                    youTubePreview.setLayoutParams(lp);
-                    youTubePreview.setContent(mMovieVideos[i][0], mMovieVideos[i][1],
-                            getResources().getDimension(R.dimen.subheading_text_size));
-                    linearLayout.addView(youTubePreview);
+                    if (mImages) {
+                        YouTubePreview youTubePreview = new YouTubePreview(getContext());
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        lp.setMargins(0, (int) getResources().getDimension(R.dimen.normal_layout_margin),
+                                0,  (int) getResources().getDimension(R.dimen.normal_layout_margin));
+                        youTubePreview.setLayoutParams(lp);
+                        youTubePreview.setContent(mMovieVideos[i][0], mMovieVideos[i][1],
+                                getResources().getDimension(R.dimen.subheading_text_size));
+                        linearLayout.addView(youTubePreview);
+                    } else {
+                        final String key = mMovieVideos[i][0];
+                        Button bVideo = new Button(getContext());
+                        bVideo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT));
+                        bVideo.setText(mMovieVideos[i][1]);
+                        bVideo.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                YouTubePreview ytp = new YouTubePreview(getContext());
+                                ytp.youTube(key);
+                            }
+                        });
+                        linearLayout.addView(bVideo);
+                    }
                 }
             }
         }

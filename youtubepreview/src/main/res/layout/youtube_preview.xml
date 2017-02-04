@@ -15,13 +15,13 @@
             android:layout_alignEnd="@+id/youtube_preview_iv_thumb"/>
         <ImageView
             android:id="@+id/youtube_preview_iv_thumb"
-            android:contentDescription="video thumbnail"
+            android:contentDescription="@string/video_thumbnail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/youtube_preview_tv_movie_title"/>
         <ImageView
             android:id="@+id/youtube_preview_iv_thumb_overlay"
-            android:contentDescription="video thumbnail overlay"
+            android:contentDescription="@string/video_thumbnail_overlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/youtube_preview_tv_movie_title"/>
@@ -54,22 +54,22 @@
                     android:layout_height="wrap_content">
                     <ImageView
                         android:id="@+id/youtube_preview_iv_1"
-                        android:contentDescription="small video thumbnail #1"
+                        android:contentDescription="@string/small_video_thumbnail_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/youtube_preview_iv_3"
-                        android:contentDescription="small video thumbnail #3"
+                        android:contentDescription="@string/small_video_thumbnail_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/youtube_preview_iv_2"
-                        android:contentDescription="small video thumbnail #2"
+                        android:contentDescription="@string/small_video_thumbnail_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/youtube_preview_iv_small_thumb_overlay"
-                        android:contentDescription="small video thumbnail overlay"
+                        android:contentDescription="@string/small_video_thumbnail_overlay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </RelativeLayout>

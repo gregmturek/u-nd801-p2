@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -88,7 +88,10 @@ public class YouTubePreview extends RelativeLayout implements ViewTreeObserver.O
 
         View v = this.findViewById(R.id.youtube_preview);
         GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setColors(new int[] {Color.parseColor("#dddddd"), Color.parseColor("#222222")} );
+        gradientDrawable.setColors(new int[] {
+                ResourcesCompat.getColor(getResources(), R.color.background_gradient_start_color, null),
+                ResourcesCompat.getColor(getResources(), R.color.background_gradient_end_color, null)
+        } );
         v.setBackground(gradientDrawable);
     }
 
@@ -248,14 +251,14 @@ public class YouTubePreview extends RelativeLayout implements ViewTreeObserver.O
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            mPaint.setColor(Color.parseColor("#000000"));
+            mPaint.setColor(ResourcesCompat.getColor(getResources(), R.color.thumb_overlay_color, null));
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(getResources().getDimension(R.dimen.ytp_stroke_width));
             canvas.drawRect(0, 0, mWidth-1, mHeight-1, mPaint);
         }
     }
 
-    private void youTube(String key) {
+    public void youTube(String key) {
         Uri uri = Uri.parse("vnd.youtube:" + key);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         getContext().startActivity(intent);
