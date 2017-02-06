@@ -6,4 +6,8 @@
     <string name="small_video_thumbnail_3">small video thumbnail #3</string>
     <string name="small_video_thumbnail_2">small video thumbnail #2</string>
     <string name="small_video_thumbnail_overlay">small video thumbnail overlay</string>
+    <string name="play_video">play video</string>
+    <string name="youtube_logo">YouTube logo</string>
+    <string name="previous_small_video_thumbnail">previous small video thumbnail</string>
+    <string name="next_small_video_thumbnail">next small video thumbnail</string>
 </resources>

@@ -11,29 +11,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_alignStart="@+id/youtube_preview_iv_thumb"
-            android:layout_alignEnd="@+id/youtube_preview_iv_thumb"/>
-        <ImageView
-            android:id="@+id/youtube_preview_iv_thumb"
-            android:contentDescription="@string/video_thumbnail"
+            android:layout_alignStart="@+id/youtube_preview_fl"
+            android:layout_alignEnd="@+id/youtube_preview_fl"/>
+        <FrameLayout
+            android:id="@+id/youtube_preview_fl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/youtube_preview_tv_movie_title"/>
-        <ImageView
-            android:id="@+id/youtube_preview_iv_thumb_overlay"
-            android:contentDescription="@string/video_thumbnail_overlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/youtube_preview_tv_movie_title"/>
+            android:layout_below="@+id/youtube_preview_tv_movie_title">
+            <ImageView
+                android:id="@+id/youtube_preview_iv_thumb"
+                android:contentDescription="@string/video_thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/youtube_preview_iv_thumb_overlay"
+                android:contentDescription="@string/video_thumbnail_overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/youtube_preview_button_youtube"
+                android:contentDescription="@string/play_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:alpha="0.67"/>
+        </FrameLayout>
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/youtube_preview_iv_thumb"
-            android:layout_alignStart="@+id/youtube_preview_iv_thumb"
-            android:layout_alignEnd="@+id/youtube_preview_iv_thumb"
+            android:layout_below="@+id/youtube_preview_fl"
+            android:layout_alignStart="@+id/youtube_preview_fl"
+            android:layout_alignEnd="@+id/youtube_preview_fl"
             android:layout_marginTop="@dimen/ytp_padding">
-            <Button
-                android:id="@+id/youtube_preview_button_youtube"
+            <ImageView
+                android:id="@+id/youtube_preview_youtube_logo"
+                android:contentDescription="@string/youtube_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -47,8 +59,10 @@
                 android:gravity="center">
                 <Button
                     android:id="@+id/youtube_preview_button_previous"
+                    android:contentDescription="@string/previous_small_video_thumbnail"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/ytp_padding"/>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -75,8 +89,10 @@
                 </RelativeLayout>
                 <Button
                     android:id="@+id/youtube_preview_button_next"
+                    android:contentDescription="@string/next_small_video_thumbnail"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/ytp_padding"/>
             </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>

@@ -134,8 +134,8 @@ public class YouTubePreview extends RelativeLayout implements ViewTreeObserver.O
         ivThumbOverlay.getLayoutParams().height = mHeight;
         ivThumbOverlay.setImageBitmap(bitmap);
 
-        mWidth = ivImageWidth / 3;
-        mHeight = ivImageHeight / 3;
+        mWidth = ivImageWidth / 4;
+        mHeight = ivImageHeight / 4;
 
         final ImageView iv1 = (ImageView) findViewById(R.id.youtube_preview_iv_1);
         iv1.getLayoutParams().width = mWidth;
@@ -174,18 +174,27 @@ public class YouTubePreview extends RelativeLayout implements ViewTreeObserver.O
         ivThumbOverlay2.getLayoutParams().height = mHeight;
         ivThumbOverlay2.setImageBitmap(bitmap2);
 
-        mWidth = mHeight = ivImageWidth / 4;
+        mWidth = ivImageWidth / 4;
+        mHeight = mWidth * 481 / 773;
 
+        ImageView ivYouTube = (ImageView) findViewById(R.id.youtube_preview_youtube_logo);
+        ivYouTube.getLayoutParams().width = mWidth;
+        ivYouTube.getLayoutParams().height = mHeight;
+        ivYouTube.setImageResource(R.drawable.youtube);
+
+        Button youtubeButton;
         Button previousButton;
         Button nextButton;
-        Button youtubeButton;
+
+        mWidth = mHeight = ivImageWidth / 3;
 
         youtubeButton = (Button) findViewById(R.id.youtube_preview_button_youtube);
         youtubeButton.getLayoutParams().width = mWidth;
         youtubeButton.getLayoutParams().height = mHeight;
-        youtubeButton.setBackgroundResource(R.drawable.youtube);
+        youtubeButton.setBackgroundResource(R.drawable.play);
 
-        mWidth = mHeight = ivImageWidth / 9;
+        mWidth = mHeight = ivImageWidth / 12;
+//        mHeight = mWidth * 128 / 81;
 
         previousButton = (Button) findViewById(R.id.youtube_preview_button_previous);
         previousButton.getLayoutParams().width = mWidth;
