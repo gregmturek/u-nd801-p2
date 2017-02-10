@@ -65,8 +65,8 @@ public class DetailFragment extends Fragment {
     private boolean mTwoPane;
     private boolean mImages;
 
-    String[][] mMovieVideos;
-    String[][] mMovieReviews;
+    String[][] mMovieVideos = new String[0][0];
+    String[][] mMovieReviews = new String[0][0];
 
     public DetailFragment() {
         // Required empty public constructor
@@ -448,8 +448,8 @@ public class DetailFragment extends Fragment {
             if (result != null) {
                 mMovieVideos = result;
                 // New data is back from the server.  Hooray!
-                showVideos();
             }
+            showVideos();
         }
     }
 
@@ -608,8 +608,8 @@ public class DetailFragment extends Fragment {
             if (result != null) {
                 mMovieReviews = result;
                 // New data is back from the server.  Hooray!
-                showReviews();
             }
+            showReviews();
         }
     }
 
