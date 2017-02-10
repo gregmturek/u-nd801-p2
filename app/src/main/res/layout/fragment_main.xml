@@ -10,5 +10,14 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/rv_recycler_view"
         />
+    <!-- empty grid -->
+    <TextView
+        android:id="@+id/rv_grid_empty"
+        android:text="@string/empty_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/text_margin"
+        />
 
 </RelativeLayout>

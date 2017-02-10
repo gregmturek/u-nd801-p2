@@ -33,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -161,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
         private MoviesAdapter mCursorAdapter;
         private RecyclerView mRv;
+        private TextView emptyView;
 
         private PreCachingGridLayoutManager mGlm;
 
@@ -219,9 +221,30 @@ public class MainActivity extends AppCompatActivity {
             mRv.setLayoutManager(mGlm);
 
             mCursorAdapter = new MoviesAdapter(getActivity(), null, mTabNum, mTwoPane);
+
+            emptyView = (TextView) rootView.findViewById(R.id.rv_grid_empty);
+
+            mCursorAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    checkIfAdapterIsEmpty();
+                }
+            });
+
             mRv.setAdapter(mCursorAdapter);
 
+            checkIfAdapterIsEmpty();
+
             return rootView;
+        }
+
+        private void checkIfAdapterIsEmpty() {
+            if (mCursorAdapter.getItemCount() == 0) {
+                emptyView.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.GONE);
+            }
         }
 
         public class PreCachingGridLayoutManager extends GridLayoutManager {
