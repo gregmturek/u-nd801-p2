@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -114,7 +115,7 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+    public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
         holder.mTextViewTitle.getLayoutParams().width = mCardImageWidth;
         holder.mTextViewTitle.getLayoutParams().height = mCardImageHeight;
         holder.mImageView.getLayoutParams().width = mCardImageWidth;
@@ -131,7 +132,17 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                     Picasso.with(mContext)
                             .load(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH)))
                             .noFade()
-                            .into(holder.mImageView);
+                            .into(holder.mImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    holder.mImageView.setVisibility(View.INVISIBLE);
+                                }
+                            });
                 }
                 holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_DATE)));
                 holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(MostPopularColumns.MOVIE_RATING)));
@@ -152,7 +163,17 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                     Picasso.with(mContext)
                             .load(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_IMAGEPATH)))
                             .noFade()
-                            .into(holder.mImageView);
+                            .into(holder.mImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    holder.mImageView.setVisibility(View.INVISIBLE);
+                                }
+                            });
                 }
                 holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_DATE)));
                 holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(TopRatedColumns.MOVIE_RATING)));
@@ -173,7 +194,17 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                     Picasso.with(mContext)
                             .load(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_IMAGEPATH)))
                             .noFade()
-                            .into(holder.mImageView);
+                            .into(holder.mImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    holder.mImageView.setVisibility(View.INVISIBLE);
+                                }
+                            });
                 }
                 holder.mTextViewDate.setText(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_DATE)));
                 holder.mTextViewRating.setText(cursor.getString(cursor.getColumnIndex(FavoriteColumns.MOVIE_RATING)));

@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.zythem.youtubepreview.YouTubePreview;
 
@@ -102,7 +103,7 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         FetchVideoTask fetchVideoTask = new FetchVideoTask();
@@ -209,14 +210,24 @@ public class DetailFragment extends Fragment {
         boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
         mImages = sharedPref.getBoolean("images_switch", defaultValue);
 
-        ImageView ivImagepath2 = (ImageView) view.findViewById(R.id.detail_imagepath2);
+        final ImageView ivImagepath2 = (ImageView) view.findViewById(R.id.detail_imagepath2);
         if (mMovieInfo.mImagepath2 != null && !mMovieInfo.mImagepath2.isEmpty() && mImages) {
             Picasso.with(getContext())
                     .load(mMovieInfo.mImagepath2)
-                    .into(ivImagepath2);
+                    .into(ivImagepath2, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            ivImagepath2.setVisibility(View.INVISIBLE);
+                        }
+                    });
         }
 
-        ImageView ivImagepath = (ImageView) view.findViewById(R.id.detail_imagepath);
+        final ImageView ivImagepath = (ImageView) view.findViewById(R.id.detail_imagepath);
         float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) / getResources().getDisplayMetrics().density;
         int ivImagepathHeight = (screenHeightDp / divisor) - (Math.round(marginValue) * 2);
         ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ivImagepathHeight, getResources().getDisplayMetrics());
@@ -231,14 +242,47 @@ public class DetailFragment extends Fragment {
         ivImagepath.getLayoutParams().width = (int) Math.round(ivImagepathHeight / 1.5);
         ivImagepath.getLayoutParams().height = ivImagepathHeight;
 
-        TextView tvDate = (TextView) view.findViewById(R.id.detail_date);
-        TextView tvRating = (TextView) view.findViewById(R.id.detail_rating);
+        final TextView tvDate = (TextView) view.findViewById(R.id.detail_date);
+        final TextView tvRating = (TextView) view.findViewById(R.id.detail_rating);
 
         if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && mImages && !mTwoPane) {
             Picasso.with(getContext())
                     .load(mMovieInfo.mImagepath)
                     .noFade()
-                    .into(ivImagepath);
+                    .into(ivImagepath, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            ivImagepath.setVisibility(View.GONE);
+
+                            TextView tvOverviewHeading = (TextView) view.findViewById(R.id.detail_overview_heading);
+                            RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
+                            tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
+                            tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
+
+                            TextView tvDateLabel = (TextView) view.findViewById(R.id.detail_date_label);
+                            RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
+                            tvDateLabelParams.setMarginStart(0);
+                            tvDateLabel.setLayoutParams(tvDateLabelParams);
+
+                            RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
+                            tvDateParams.setMarginStart(0);
+                            tvDate.setLayoutParams(tvDateParams);
+
+                            TextView tvRatingLabel = (TextView) view.findViewById(R.id.detail_rating_label);
+                            RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
+                            tvRatingLabelParams.setMarginStart(0);
+                            tvRatingLabel.setLayoutParams(tvRatingLabelParams);
+
+                            RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
+                            tvRatingParams.setMarginStart(0);
+                            tvRating.setLayoutParams(tvRatingParams);
+                        }
+                    });
         }
         else {
             ivImagepath.setVisibility(View.GONE);
@@ -268,6 +312,10 @@ public class DetailFragment extends Fragment {
 
         TextView tvOverview = (TextView) view.findViewById(R.id.detail_overview);
         tvOverview.setText(mMovieInfo.mOverview);
+    }
+
+    private void alternateLayout () {
+
     }
 
     @Override
