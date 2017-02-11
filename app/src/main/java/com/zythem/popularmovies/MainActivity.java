@@ -7,6 +7,8 @@ import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -247,6 +249,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Returns true if the network is available or about to become available.
+         *
+         * @param c Context used to get the ConnectivityManager
+         * @return
+         */
+        static public boolean isNetworkAvailable(Context c) {
+            ConnectivityManager cm =
+                    (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+        }
+
+        private void updateEmptyView() {
+            if (mCursorAdapter.getItemCount() == 0) {
+                if (emptyView != null) {
+                    // if cursor is empty, why?
+                    if (!isNetworkAvailable(getActivity()) ) {
+                        emptyView.setText(R.string.empty_grid_no_network);
+                    }
+                }
+            }
+        }
+
         public class PreCachingGridLayoutManager extends GridLayoutManager {
             private int extraLayoutSpace;
 
@@ -420,6 +448,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data){
             mCursorAdapter.swapCursor(data);
+            updateEmptyView();
         }
 
         @Override

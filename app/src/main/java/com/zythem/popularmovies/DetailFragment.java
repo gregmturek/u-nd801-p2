@@ -48,6 +48,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.zythem.popularmovies.MainActivity.TabFragment.isNetworkAvailable;
 import static com.zythem.popularmovies.R.id.app_bar;
 
 /**
@@ -460,7 +461,11 @@ public class DetailFragment extends Fragment {
             TextView tv = new TextView(getContext());
             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT));
-            tv.setText(getActivity().getApplicationContext().getString(R.string.none));
+            if (!isNetworkAvailable(getActivity()) ) {
+                tv.setText(R.string.none_no_network);
+            } else {
+                tv.setText(getActivity().getApplicationContext().getString(R.string.none));
+            }
             linearLayout.addView(tv);
         } else {
             for (int i = 0; i < mMovieVideos.length; i++) {
@@ -620,7 +625,11 @@ public class DetailFragment extends Fragment {
             TextView tv = new TextView(getActivity());
             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT));
-            tv.setText(getActivity().getApplicationContext().getString(R.string.none));
+            if (!isNetworkAvailable(getActivity()) ) {
+                tv.setText(R.string.none_no_network);
+            } else {
+                tv.setText(getActivity().getApplicationContext().getString(R.string.none));
+            }
             linearLayout.addView(tv);
         } else {
             for (int i = 0; i < mMovieReviews.length; i++) {
