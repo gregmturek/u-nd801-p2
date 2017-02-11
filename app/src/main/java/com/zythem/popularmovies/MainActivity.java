@@ -1,8 +1,10 @@
 package com.zythem.popularmovies;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -36,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mTwoPane = false;
         }
-
-
     }
 
     public void loadTabletDetailFragment(MovieDataToPass movieInfo) {
@@ -158,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private static final String ARG_TWO_PANE = "two_pane";
 
-
         private int mTabNum;
         private boolean mTwoPane;
 
@@ -169,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
         private PreCachingGridLayoutManager mGlm;
 
         private String[][] mMovieData;
+
+        private NetworkChangeReceiver mReceiver;
+        private boolean isConnected = false;
 
         public TabFragment() {
         }
@@ -238,7 +241,51 @@ public class MainActivity extends AppCompatActivity {
 
             checkIfAdapterIsEmpty();
 
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            mReceiver = new NetworkChangeReceiver();
+            getActivity().registerReceiver(mReceiver, filter);
+
             return rootView;
+        }
+
+        public class NetworkChangeReceiver extends BroadcastReceiver {
+
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                isNetworkAvailable(context);
+            }
+
+            private boolean isNetworkAvailable(Context context) {
+                ConnectivityManager connectivity = (ConnectivityManager)
+                        context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (connectivity != null) {
+                    NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
+                    if (networkInfo != null) {
+                        if (networkInfo.isConnectedOrConnecting()) {
+                            if (!isConnected) {
+                                isConnected = true;
+                                if (mCursorAdapter.getItemCount() == 0) {
+                                    TabFragment fragment = (TabFragment) getActivity().getSupportFragmentManager().getFragments().get(mTabNum - 1);
+                                    getActivity().getSupportFragmentManager().beginTransaction()
+                                            .detach(fragment)
+                                            .attach(fragment)
+                                            .commit();
+                                    Toast.makeText(getContext(), "Refreshed: " + mTabNum, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                }
+                isConnected = false;
+                return false;
+            }
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            getActivity().unregisterReceiver(mReceiver);
         }
 
         private void checkIfAdapterIsEmpty() {
