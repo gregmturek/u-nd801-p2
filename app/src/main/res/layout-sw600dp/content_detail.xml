@@ -86,6 +86,14 @@
                 android:textSize="@dimen/heading_text_size"
                 android:text="@string/videos"/>
 
+            <!-- empty section -->
+            <TextView
+                android:id="@+id/detail_videos_empty"
+                android:text="@string/none"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
         </LinearLayout>
 
         <LinearLayout
@@ -103,6 +111,14 @@
                 android:layout_marginTop="@dimen/normal_layout_margin"
                 android:textSize="@dimen/heading_text_size"
                 android:text="@string/reviews"/>
+
+            <!-- empty section -->
+            <TextView
+                android:id="@+id/detail_reviews_empty"
+                android:text="@string/none"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
         </LinearLayout>
 

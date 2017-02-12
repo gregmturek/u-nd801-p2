@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -38,7 +39,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
     public Boolean mTwoPane;
 
+    private NetworkChangeReceiver mReceiver;
+    private boolean mIsConnected = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +112,65 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mTwoPane = false;
         }
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mReceiver = new NetworkChangeReceiver();
+        registerReceiver(mReceiver, filter);
+    }
+
+    public class NetworkChangeReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            isNetworkAvailable(context);
+        }
+
+        private boolean isNetworkAvailable(Context context) {
+            ConnectivityManager connectivity = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivity != null) {
+                NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
+                if (networkInfo != null) {
+                    if (networkInfo.isConnectedOrConnecting()) {
+                        if (!mIsConnected) {
+                            mIsConnected = true;
+
+                            Fragment tabFragment1 = getSupportFragmentManager().getFragments().get(0);
+                            if (tabFragment1 instanceof TabFragment) {
+                                ((TabFragment) tabFragment1).refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES,
+                                        MovieContentProvider.Path.MOST_POPULAR);
+                            }
+
+                            Fragment tabFragment2 = getSupportFragmentManager().getFragments().get(1);
+                            if (tabFragment2 instanceof TabFragment) {
+                                ((TabFragment) tabFragment2).refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES,
+                                        MovieContentProvider.Path.TOP_RATED);
+                            }
+
+                            if (mTwoPane) {
+                                Fragment detailFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                                if (detailFragment instanceof DetailFragment) {
+                                    ((DetailFragment) detailFragment).reInit();
+                                }
+                            }
+                      }
+                        return true;
+                    }
+                }
+            }
+            View view = findViewById(R.id.container);
+            if (view != null) {
+                Snackbar.make(view, "No network connection!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+            mIsConnected = false;
+            return false;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
     }
 
     public void loadTabletDetailFragment(MovieDataToPass movieInfo) {
@@ -169,9 +231,6 @@ public class MainActivity extends AppCompatActivity {
         private PreCachingGridLayoutManager mGlm;
 
         private String[][] mMovieData;
-
-        private NetworkChangeReceiver mReceiver;
-        private boolean isConnected = false;
 
         public TabFragment() {
         }
@@ -241,51 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
             checkIfAdapterIsEmpty();
 
-            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            mReceiver = new NetworkChangeReceiver();
-            getActivity().registerReceiver(mReceiver, filter);
-
             return rootView;
-        }
-
-        public class NetworkChangeReceiver extends BroadcastReceiver {
-
-            @Override
-            public void onReceive(final Context context, final Intent intent) {
-                isNetworkAvailable(context);
-            }
-
-            private boolean isNetworkAvailable(Context context) {
-                ConnectivityManager connectivity = (ConnectivityManager)
-                        context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                if (connectivity != null) {
-                    NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
-                    if (networkInfo != null) {
-                        if (networkInfo.isConnectedOrConnecting()) {
-                            if (!isConnected) {
-                                isConnected = true;
-                                if (mCursorAdapter.getItemCount() == 0) {
-                                    TabFragment fragment = (TabFragment) getActivity().getSupportFragmentManager().getFragments().get(mTabNum - 1);
-                                    getActivity().getSupportFragmentManager().beginTransaction()
-                                            .detach(fragment)
-                                            .attach(fragment)
-                                            .commit();
-                                    Toast.makeText(getContext(), "Refreshed: " + mTabNum, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            return true;
-                        }
-                    }
-                }
-                isConnected = false;
-                return false;
-            }
-        }
-
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-            getActivity().unregisterReceiver(mReceiver);
         }
 
         private void checkIfAdapterIsEmpty() {
@@ -293,32 +308,6 @@ public class MainActivity extends AppCompatActivity {
                 emptyView.setVisibility(View.VISIBLE);
             } else {
                 emptyView.setVisibility(View.GONE);
-            }
-        }
-
-        /**
-         * Returns true if the network is available or about to become available.
-         *
-         * @param c Context used to get the ConnectivityManager
-         * @return
-         */
-        static public boolean isNetworkAvailable(Context c) {
-            ConnectivityManager cm =
-                    (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return activeNetwork != null &&
-                    activeNetwork.isConnectedOrConnecting();
-        }
-
-        private void updateEmptyView() {
-            if (mCursorAdapter.getItemCount() == 0) {
-                if (emptyView != null) {
-                    // if cursor is empty, why?
-                    if (!isNetworkAvailable(getActivity()) ) {
-                        emptyView.setText(R.string.empty_grid_no_network);
-                    }
-                }
             }
         }
 
@@ -470,7 +459,6 @@ public class MainActivity extends AppCompatActivity {
             getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
         }
 
-
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args){
             Uri uri = null;
@@ -495,15 +483,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data){
             mCursorAdapter.swapCursor(data);
-            updateEmptyView();
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader){
             mCursorAdapter.swapCursor(null);
         }
-
-
 
         public class FetchMovieTask extends AsyncTask<String, Void, String[][]> {
 

@@ -1,14 +1,26 @@
 package com.zythem.popularmovies;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import org.parceler.Parcels;
 
 import static com.zythem.popularmovies.R.layout.activity_detail;
 
 public class DetailActivity extends AppCompatActivity {
+
+    private NetworkChangeReceiver mReceiver;
+    private boolean mIsConnected = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,6 +47,51 @@ public class DetailActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, DetailFragment.newInstance(bundle, false))
                     .commit();
         }
+
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        mReceiver = new NetworkChangeReceiver();
+        registerReceiver(mReceiver, filter);
+    }
+
+    public class NetworkChangeReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            isNetworkAvailable(context);
+        }
+
+        private boolean isNetworkAvailable(Context context) {
+            ConnectivityManager connectivity = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivity != null) {
+                NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
+                if (networkInfo != null) {
+                    if (networkInfo.isConnectedOrConnecting()) {
+                        if (!mIsConnected) {
+                            mIsConnected = true;
+
+                            Fragment detailFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                            if (detailFragment instanceof DetailFragment) {
+                                ((DetailFragment) detailFragment).reInit();
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            View view = findViewById(R.id.fragment_container);
+            if (view != null) {
+                Snackbar.make(view, "No network connection!", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+            mIsConnected = false;
+            return false;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
     }
 }
 

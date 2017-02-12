@@ -48,7 +48,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static com.zythem.popularmovies.MainActivity.TabFragment.isNetworkAvailable;
 import static com.zythem.popularmovies.R.id.app_bar;
 
 /**
@@ -66,8 +65,12 @@ public class DetailFragment extends Fragment {
     private boolean mTwoPane;
     private boolean mImages;
 
-    String[][] mMovieVideos = new String[0][0];
-    String[][] mMovieReviews = new String[0][0];
+    private String[][] mMovieVideos = new String[0][0];
+    private String[][] mMovieReviews = new String[0][0];
+
+    private View mView;
+    private int mDivisor;
+    private int mScreenHeightDp;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -99,46 +102,190 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_detail, container, false);
+    }
+
+    public void reInit() {
+        fetchVideosAndReviews();
+        loadContent();
+    }
+
+    public void fetchVideosAndReviews() {
+        FetchVideoTask fetchVideoTask = new FetchVideoTask();
+        fetchVideoTask.execute(mMovieInfo.mId);
+
+        FetchReviewTask fetchReviewTask = new FetchReviewTask();
+        fetchReviewTask.execute(mMovieInfo.mId);
+    }
+
+    public void loadContent() {
+        SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
+        mImages = sharedPref.getBoolean("images_switch", defaultValue);
+
+        final ImageView ivImagepath2 = (ImageView) mView.findViewById(R.id.detail_imagepath2);
+        if (mMovieInfo.mImagepath2 != null && !mMovieInfo.mImagepath2.isEmpty() && mImages) {
+            Picasso.with(getContext())
+                    .load(mMovieInfo.mImagepath2)
+                    .into(ivImagepath2, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            if (isAdded()) {
+                                ivImagepath2.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            if (isAdded()) {
+                                ivImagepath2.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+        }
+
+        final ImageView ivImagepath = (ImageView) mView.findViewById(R.id.detail_imagepath);
+        float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) / getResources().getDisplayMetrics().density;
+        int ivImagepathHeight = (mScreenHeightDp / mDivisor) - (Math.round(marginValue) * 2);
+        ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ivImagepathHeight, getResources().getDisplayMetrics());
+        if(mDivisor == 1) {
+            final TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
+                    new int[]{R.attr.actionBarSize}
+            );
+            int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            ivImagepathHeight -= actionBarHeight;
+        }
+        ivImagepath.getLayoutParams().width = (int) Math.round(ivImagepathHeight / 1.5);
+        ivImagepath.getLayoutParams().height = ivImagepathHeight;
+
+        final TextView tvDate = (TextView) mView.findViewById(R.id.detail_date);
+        final TextView tvRating = (TextView) mView.findViewById(R.id.detail_rating);
+
+        if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && mImages && !mTwoPane) {
+            Picasso.with(getContext())
+                    .load(mMovieInfo.mImagepath)
+                    .noFade()
+                    .into(ivImagepath, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            if (isAdded()) {
+                                ivImagepath.setVisibility(View.VISIBLE);
+
+                                TextView tvOverviewHeading = (TextView) mView.findViewById(R.id.detail_overview_heading);
+                                RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams)
+                                        tvOverviewHeading.getLayoutParams();
+                                tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_imagepath);
+                                tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
+
+                                TextView tvDateLabel = (TextView) mView.findViewById(R.id.detail_date_label);
+                                RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
+                                tvDateLabelParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
+                                tvDateLabel.setLayoutParams(tvDateLabelParams);
+
+                                RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
+                                tvDateParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
+                                tvDate.setLayoutParams(tvDateParams);
+
+                                TextView tvRatingLabel = (TextView) mView.findViewById(R.id.detail_rating_label);
+                                RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
+                                tvRatingLabelParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
+                                tvRatingLabel.setLayoutParams(tvRatingLabelParams);
+
+                                RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
+                                tvRatingParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
+                                tvRating.setLayoutParams(tvRatingParams);
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            if (isAdded()) {
+                                ivImagepath.setVisibility(View.GONE);
+
+                                TextView tvOverviewHeading = (TextView) mView.findViewById(R.id.detail_overview_heading);
+                                RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
+                                tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
+                                tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
+
+                                TextView tvDateLabel = (TextView) mView.findViewById(R.id.detail_date_label);
+                                RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
+                                tvDateLabelParams.setMarginStart(0);
+                                tvDateLabel.setLayoutParams(tvDateLabelParams);
+
+                                RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
+                                tvDateParams.setMarginStart(0);
+                                tvDate.setLayoutParams(tvDateParams);
+
+                                TextView tvRatingLabel = (TextView) mView.findViewById(R.id.detail_rating_label);
+                                RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
+                                tvRatingLabelParams.setMarginStart(0);
+                                tvRatingLabel.setLayoutParams(tvRatingLabelParams);
+
+                                RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
+                                tvRatingParams.setMarginStart(0);
+                                tvRating.setLayoutParams(tvRatingParams);
+                            }
+                        }
+                    });
+        }
+        else {
+            ivImagepath.setVisibility(View.GONE);
+
+            TextView tvOverviewHeading = (TextView) mView.findViewById(R.id.detail_overview_heading);
+            RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
+            tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
+
+            TextView tvDateLabel = (TextView) mView.findViewById(R.id.detail_date_label);
+            RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
+            tvDateLabelParams.setMarginStart(0);
+
+            RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
+            tvDateParams.setMarginStart(0);
+
+            TextView tvRatingLabel = (TextView) mView.findViewById(R.id.detail_rating_label);
+            RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
+            tvRatingLabelParams.setMarginStart(0);
+
+            RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
+            tvRatingParams.setMarginStart(0);
+        }
+
+        tvDate.setText(mMovieInfo.mDate);
+
+        tvRating.setText(mMovieInfo.mRating);
+
+        TextView tvOverview = (TextView) mView.findViewById(R.id.detail_overview);
+        tvOverview.setText(mMovieInfo.mOverview);
     }
 
     @Override
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        FetchVideoTask fetchVideoTask = new FetchVideoTask();
-        fetchVideoTask.execute(mMovieInfo.mId);
+        mView = view;
 
-        FetchReviewTask fetchReviewTask = new FetchReviewTask();
-        fetchReviewTask.execute(mMovieInfo.mId);
-
-        int divisor;
+        fetchVideosAndReviews();
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            divisor = 2;
+            mDivisor = 2;
         }
         else{
-            divisor = 1;
+            mDivisor = 1;
         }
 
         Configuration config = getResources().getConfiguration();
-        int screenHeightDp = config.screenHeightDp;
-
+        mScreenHeightDp = config.screenHeightDp;
         if(mTwoPane) {
-            screenHeightDp /= 2;
+            mScreenHeightDp /= 2;
         }
 
-        int appbarImageHeight = screenHeightDp / divisor;
-
+        int appbarImageHeight = mScreenHeightDp / mDivisor;
         appbarImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, appbarImageHeight, getResources().getDisplayMetrics());
-
         AppBarLayout appbar = (AppBarLayout) getActivity().findViewById(app_bar);
-
         appbar.getLayoutParams().height = appbarImageHeight;
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-
         Cursor c = null;
         String[] projection = {FavoriteColumns.MOVIE_ID};
         String selectionClause = FavoriteColumns.MOVIE_ID + " = ?";
@@ -203,120 +350,11 @@ public class DetailFragment extends Fragment {
             }
         });
 
-            CollapsingToolbarLayout collapsingToolbar =
-                    (CollapsingToolbarLayout) view.findViewById(R.id.toolbar_layout);
-            collapsingToolbar.setTitle(mMovieInfo.mTitle);
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) view.findViewById(R.id.toolbar_layout);
+        collapsingToolbar.setTitle(mMovieInfo.mTitle);
 
-        SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-        boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
-        mImages = sharedPref.getBoolean("images_switch", defaultValue);
-
-        final ImageView ivImagepath2 = (ImageView) view.findViewById(R.id.detail_imagepath2);
-        if (mMovieInfo.mImagepath2 != null && !mMovieInfo.mImagepath2.isEmpty() && mImages) {
-            Picasso.with(getContext())
-                    .load(mMovieInfo.mImagepath2)
-                    .into(ivImagepath2, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-                            ivImagepath2.setVisibility(View.INVISIBLE);
-                        }
-                    });
-        }
-
-        final ImageView ivImagepath = (ImageView) view.findViewById(R.id.detail_imagepath);
-        float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) / getResources().getDisplayMetrics().density;
-        int ivImagepathHeight = (screenHeightDp / divisor) - (Math.round(marginValue) * 2);
-        ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ivImagepathHeight, getResources().getDisplayMetrics());
-        if(divisor == 1) {
-            final TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
-                    new int[]{R.attr.actionBarSize}
-            );
-            int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
-            styledAttributes.recycle();
-            ivImagepathHeight -= actionBarHeight;
-        }
-        ivImagepath.getLayoutParams().width = (int) Math.round(ivImagepathHeight / 1.5);
-        ivImagepath.getLayoutParams().height = ivImagepathHeight;
-
-        final TextView tvDate = (TextView) view.findViewById(R.id.detail_date);
-        final TextView tvRating = (TextView) view.findViewById(R.id.detail_rating);
-
-        if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && mImages && !mTwoPane) {
-            Picasso.with(getContext())
-                    .load(mMovieInfo.mImagepath)
-                    .noFade()
-                    .into(ivImagepath, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-                            ivImagepath.setVisibility(View.GONE);
-
-                            TextView tvOverviewHeading = (TextView) view.findViewById(R.id.detail_overview_heading);
-                            RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
-                            tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
-                            tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
-
-                            TextView tvDateLabel = (TextView) view.findViewById(R.id.detail_date_label);
-                            RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
-                            tvDateLabelParams.setMarginStart(0);
-                            tvDateLabel.setLayoutParams(tvDateLabelParams);
-
-                            RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
-                            tvDateParams.setMarginStart(0);
-                            tvDate.setLayoutParams(tvDateParams);
-
-                            TextView tvRatingLabel = (TextView) view.findViewById(R.id.detail_rating_label);
-                            RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
-                            tvRatingLabelParams.setMarginStart(0);
-                            tvRatingLabel.setLayoutParams(tvRatingLabelParams);
-
-                            RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
-                            tvRatingParams.setMarginStart(0);
-                            tvRating.setLayoutParams(tvRatingParams);
-                        }
-                    });
-        }
-        else {
-            ivImagepath.setVisibility(View.GONE);
-
-            TextView tvOverviewHeading = (TextView) view.findViewById(R.id.detail_overview_heading);
-            RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
-            tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
-
-            TextView tvDateLabel = (TextView) view.findViewById(R.id.detail_date_label);
-            RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
-            tvDateLabelParams.setMarginStart(0);
-
-            RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
-            tvDateParams.setMarginStart(0);
-
-            TextView tvRatingLabel = (TextView) view.findViewById(R.id.detail_rating_label);
-            RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
-            tvRatingLabelParams.setMarginStart(0);
-
-            RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
-            tvRatingParams.setMarginStart(0);
-        }
-
-        tvDate.setText(mMovieInfo.mDate);
-
-        tvRating.setText(mMovieInfo.mRating);
-
-        TextView tvOverview = (TextView) view.findViewById(R.id.detail_overview);
-        tvOverview.setText(mMovieInfo.mOverview);
-    }
-
-    private void alternateLayout () {
-
+        loadContent();
     }
 
     @Override
@@ -456,18 +494,12 @@ public class DetailFragment extends Fragment {
 
     private void showVideos() {
         LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_videos_layout);
+        TextView tvEmpty = (TextView) getActivity().findViewById(R.id.detail_videos_empty);
 
         if (mMovieVideos.length == 0) {
-            TextView tv = new TextView(getContext());
-            tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            if (!isNetworkAvailable(getActivity()) ) {
-                tv.setText(R.string.none_no_network);
-            } else {
-                tv.setText(getActivity().getApplicationContext().getString(R.string.none));
-            }
-            linearLayout.addView(tv);
+            tvEmpty.setVisibility(View.VISIBLE);
         } else {
+            tvEmpty.setVisibility(View.GONE);
             for (int i = 0; i < mMovieVideos.length; i++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
                     if (mImages) {
@@ -620,18 +652,12 @@ public class DetailFragment extends Fragment {
 
     private void showReviews(){
         LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_reviews_layout);
+        TextView tvEmpty = (TextView) getActivity().findViewById(R.id.detail_reviews_empty);
 
         if (mMovieReviews.length == 0) {
-            TextView tv = new TextView(getActivity());
-            tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            if (!isNetworkAvailable(getActivity()) ) {
-                tv.setText(R.string.none_no_network);
-            } else {
-                tv.setText(getActivity().getApplicationContext().getString(R.string.none));
-            }
-            linearLayout.addView(tv);
+            tvEmpty.setVisibility(View.VISIBLE);
         } else {
+            tvEmpty.setVisibility(View.GONE);
             for (int i = 0; i < mMovieReviews.length; i++) {
                 if (i > 0) {
                     Configuration config = getResources().getConfiguration();

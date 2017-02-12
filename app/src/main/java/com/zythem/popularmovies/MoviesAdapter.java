@@ -135,7 +135,7 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                             .into(holder.mImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
-
+                                    holder.mImageView.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
@@ -166,7 +166,7 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                             .into(holder.mImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
-
+                                    holder.mImageView.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
@@ -197,7 +197,7 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
                             .into(holder.mImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {
-
+                                    holder.mImageView.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
