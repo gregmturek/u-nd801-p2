@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     public Boolean mTwoPane;
 
     private NetworkChangeReceiver mReceiver;
-    private boolean mIsConnected = false;
+    private boolean mIsConnected = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             mTwoPane = false;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mReceiver = new NetworkChangeReceiver();
@@ -135,22 +140,23 @@ public class MainActivity extends AppCompatActivity {
                         if (!mIsConnected) {
                             mIsConnected = true;
 
-                            Fragment tabFragment1 = getSupportFragmentManager().getFragments().get(0);
-                            if (tabFragment1 instanceof TabFragment) {
-                                ((TabFragment) tabFragment1).refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES,
+                            TabFragment tabFragment1 = (TabFragment) getSupportFragmentManager().getFragments().get(0);
+                            if (tabFragment1 != null) {
+                                tabFragment1.refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES,
                                         MovieContentProvider.Path.MOST_POPULAR);
                             }
 
-                            Fragment tabFragment2 = getSupportFragmentManager().getFragments().get(1);
-                            if (tabFragment2 instanceof TabFragment) {
-                                ((TabFragment) tabFragment2).refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES,
+                            TabFragment tabFragment2 = (TabFragment) getSupportFragmentManager().getFragments().get(1);
+                            if (tabFragment2 != null) {
+                                tabFragment2.refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES,
                                         MovieContentProvider.Path.TOP_RATED);
                             }
 
                             if (mTwoPane) {
-                                Fragment detailFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                                if (detailFragment instanceof DetailFragment) {
-                                    ((DetailFragment) detailFragment).reInit();
+                                DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager()
+                                        .findFragmentById(R.id.fragment_container);
+                                if (detailFragment != null) {
+                                    detailFragment.reInit();
                                 }
                             }
                       }
@@ -168,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         unregisterReceiver(mReceiver);
     }
 

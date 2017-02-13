@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -20,7 +19,7 @@ import static com.zythem.popularmovies.R.layout.activity_detail;
 public class DetailActivity extends AppCompatActivity {
 
     private NetworkChangeReceiver mReceiver;
-    private boolean mIsConnected = false;
+    private boolean mIsConnected = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,6 +46,11 @@ public class DetailActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, DetailFragment.newInstance(bundle, false))
                     .commit();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         mReceiver = new NetworkChangeReceiver();
@@ -70,9 +74,10 @@ public class DetailActivity extends AppCompatActivity {
                         if (!mIsConnected) {
                             mIsConnected = true;
 
-                            Fragment detailFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                            if (detailFragment instanceof DetailFragment) {
-                                ((DetailFragment) detailFragment).reInit();
+                            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager()
+                                    .findFragmentById(R.id.fragment_container);
+                            if (detailFragment != null) {
+                                detailFragment.reInit();
                             }
                         }
                         return true;
@@ -89,8 +94,8 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         unregisterReceiver(mReceiver);
     }
 }
