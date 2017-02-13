@@ -183,9 +183,13 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putParcelable("THE_DATA", Parcels.wrap(movieInfo));
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, DetailFragment.newInstance(bundle, true))
-                .commit();
+        DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_container);
+        if (detailFragment == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, DetailFragment.newInstance(bundle, true))
+                    .commit();
+        }
     }
 
     @Override
@@ -350,6 +354,37 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityCreated(savedInstanceState);
         }
 
+        private void showInitialTabletDetailFragment() {
+            if (mTwoPane && mTabNum == 1) {
+                MovieDataToPass movieInfo = new MovieDataToPass();
+                Cursor c = null;
+                try {
+                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
+                            null, null, null, null);
+
+                    if(c != null) {
+                        c.moveToFirst();
+
+                        movieInfo.mTitle = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
+                        movieInfo.mImagepath = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
+                        movieInfo.mDate = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_DATE));
+                        movieInfo.mRating = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_RATING));
+                        movieInfo.mId = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_ID));
+                        movieInfo.mOverview = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
+                        movieInfo.mImagepath2 = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
+
+                        ((MainActivity)getActivity()).loadTabletDetailFragment(movieInfo);
+                    }
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error ", e);
+                } finally {
+                    if(c != null){
+                        c.close();
+                    }
+                }
+            }
+        }
+/*
         @Override
         public void onStart() {
             super.onStart();
@@ -382,6 +417,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+*/
 
         public void refetchDataIfNecessary(Uri uriType, String pathType) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -413,6 +449,8 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor edit = sharedPref.edit();
                     edit.putLong("last_update", currentDate);
                     edit.apply();
+                } else {
+                    showInitialTabletDetailFragment();
                 }
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -644,6 +682,7 @@ public class MainActivity extends AppCompatActivity {
                     mMovieData = result;
                     // New data is back from the server.  Hooray!
                     storeAllData(mMovieData);
+                    showInitialTabletDetailFragment();
                 }
             }
 
