@@ -89,7 +89,7 @@
             <!-- empty section -->
             <TextView
                 android:id="@+id/detail_videos_empty"
-                android:text="@string/none"
+                android:text="@string/none_videos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -115,7 +115,7 @@
             <!-- empty section -->
             <TextView
                 android:id="@+id/detail_reviews_empty"
-                android:text="@string/none"
+                android:text="@string/none_reviews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />

@@ -717,11 +717,11 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Most Popular";
+                    return getString(R.string.tab_most_popular);
                 case 1:
-                    return "Top Rated";
+                    return getString(R.string.tab_top_rated);
                 case 2:
-                    return "Favorite";
+                    return getString(R.string.tab_favorite);
             }
             return null;
         }
