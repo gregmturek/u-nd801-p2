@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.zythem.popularmovies.MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/normal_layout_margin">
+
+        <ImageView
+            android:contentDescription="@string/cd_movie_poster"
+            android:id="@+id/detail_imagepath"
+            android:layout_width="@dimen/poster_layout_width"
+            android:layout_height="@dimen/poster_layout_height"/>
+
+        <TextView
+            android:id="@+id/detail_date_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/detail_imagepath"
+            android:layout_marginStart="@dimen/normal_layout_margin"
+            android:textSize="@dimen/heading_text_size"
+            android:text="@string/release_date"/>
+
+        <TextView
+            android:id="@+id/detail_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/detail_imagepath"
+            android:layout_below="@id/detail_date_label"
+            android:layout_marginStart="@dimen/normal_layout_margin"/>
+
+        <TextView
+            android:id="@+id/detail_rating_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/detail_imagepath"
+            android:layout_below="@+id/detail_date"
+            android:layout_marginTop="@dimen/normal_layout_margin"
+            android:layout_marginStart="@dimen/normal_layout_margin"
+            android:textSize="@dimen/heading_text_size"
+            android:text="@string/rating"/>
+
+        <TextView
+            android:id="@+id/detail_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/detail_imagepath"
+            android:layout_below="@+id/detail_rating_label"
+            android:layout_marginStart="@dimen/normal_layout_margin"/>
+
+        <TextView
+            android:id="@+id/detail_overview_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/detail_imagepath"
+            android:layout_marginTop="@dimen/normal_layout_margin"
+            android:textSize="@dimen/heading_text_size"
+            android:text="@string/synopsis"/>
+
+        <TextView
+            android:id="@+id/detail_overview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_overview_heading"/>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/detail_videos_layout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/detail_overview">
+
+            <TextView
+                android:id="@+id/detail_videos_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/normal_layout_margin"
+                android:textSize="@dimen/heading_text_size"
+                android:text="@string/videos"/>
+
+            <!-- empty section -->
+            <TextView
+                android:id="@+id/detail_videos_empty"
+                android:text="@string/none"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detail_reviews_layout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/detail_videos_layout"
+            android:layout_marginBottom="@dimen/detail_layout_margin_bottom">
+
+            <TextView
+                android:id="@+id/detail_reviews_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/normal_layout_margin"
+                android:textSize="@dimen/heading_text_size"
+                android:text="@string/reviews"/>
+
+            <!-- empty section -->
+            <TextView
+                android:id="@+id/detail_reviews_empty"
+                android:text="@string/none"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>
