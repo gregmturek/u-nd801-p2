@@ -1,5 +1,6 @@
 package com.zythem.popularmovies;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -567,6 +568,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public class FetchMovieTask extends AsyncTask<String, Void, String[][]> {
+            private ProgressDialog dialog;
 
             private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
@@ -709,6 +711,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            protected void onPreExecute() {
+                dialog = new ProgressDialog(getContext());
+                dialog.setMessage(getString(R.string.download_dialog));
+                dialog.setIndeterminate(true);
+                dialog.show();
+            }
+
+            @Override
             protected void onPostExecute(String[][] result) {
                 if (result != null) {
                     mMovieData = result;
@@ -716,6 +726,7 @@ public class MainActivity extends AppCompatActivity {
                     storeAllData(mMovieData);
                     showInitialTabletDetailFragment();
                 }
+                dialog.dismiss();
             }
 
         }

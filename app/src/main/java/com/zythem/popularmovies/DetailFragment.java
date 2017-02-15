@@ -1,6 +1,7 @@
 package com.zythem.popularmovies;
 
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -371,6 +372,7 @@ public class DetailFragment extends Fragment {
     }
 
     public class FetchVideoTask extends AsyncTask<String, Void, String[][]> {
+        ProgressDialog dialog;
 
         private final String LOG_TAG = FetchVideoTask.class.getSimpleName();
 
@@ -483,12 +485,21 @@ public class DetailFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getContext());
+            dialog.setMessage(getString(R.string.download_dialog));
+            dialog.setIndeterminate(true);
+            dialog.show();
+        }
+
+        @Override
         protected void onPostExecute(String[][] result) {
             if (result != null) {
                 mMovieVideos = result;
                 // New data is back from the server.  Hooray!
             }
             showVideos();
+            dialog.dismiss();
         }
     }
 
@@ -532,6 +543,7 @@ public class DetailFragment extends Fragment {
     }
 
     public class FetchReviewTask extends AsyncTask<String, Void, String[][]> {
+        ProgressDialog dialog;
 
         private final String LOG_TAG = FetchReviewTask.class.getSimpleName();
 
@@ -641,12 +653,20 @@ public class DetailFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getContext());
+            dialog.setMessage(getString(R.string.download_dialog));
+            dialog.setIndeterminate(true);
+            dialog.show();
+        }
+        @Override
         protected void onPostExecute(String[][] result) {
             if (result != null) {
                 mMovieReviews = result;
                 // New data is back from the server.  Hooray!
             }
             showReviews();
+            dialog.dismiss();
         }
     }
 
