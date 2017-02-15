@@ -100,6 +100,38 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        TabFragment tabFragment1 = (TabFragment) getSupportFragmentManager().getFragments().get(0);
+                        if (tabFragment1 != null) {
+                            tabFragment1.refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES,
+                                    MovieContentProvider.Path.MOST_POPULAR);
+                        }
+                        break;
+                    case 1:
+                        TabFragment tabFragment2 = (TabFragment) getSupportFragmentManager().getFragments().get(1);
+                        if (tabFragment2 != null) {
+                            tabFragment2.refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES,
+                                    MovieContentProvider.Path.TOP_RATED);
+                        }
+                        break;
+                }
+            }
+        });
+
         if (findViewById(R.id.fragment_container) != null) {
             // The detail container view will be present only in the large-screen layouts
             // (res/layout-sw600dp). If this view is present, then the activity should be
