@@ -47,7 +47,7 @@
         <item>32</item>
     </string-array>
 
-    <string name="pref_title_images">Habilitar las imágines</string>
+    <string name="pref_title_images">Habilitar las imágenes</string>
     <string name="pref_description_images">Activar o desactivar las imágines</string>
 
 <!--
