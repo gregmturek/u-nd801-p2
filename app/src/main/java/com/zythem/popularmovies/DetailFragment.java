@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,8 +18,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -145,10 +147,11 @@ public class DetailFragment extends Fragment {
                     });
         }
 
-        final ImageView ivImagepath = (ImageView) mView.findViewById(R.id.detail_imagepath);
-        float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) / getResources().getDisplayMetrics().density;
+        ImageView ivImagepath = (ImageView) mView.findViewById(R.id.detail_imagepath);
+        float marginValue = getResources().getDimension(R.dimen.normal_layout_margin) * 2
+                / getResources().getDisplayMetrics().density;
         int ivImagepathHeight = (mScreenHeightDp / mDivisor) - (Math.round(marginValue) * 2);
-        ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ivImagepathHeight, getResources().getDisplayMetrics());
+        ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ivImagepathHeight, getResources().getDisplayMetrics());
         if(mDivisor == 1) {
             final TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
                     new int[]{R.attr.actionBarSize}
@@ -162,6 +165,7 @@ public class DetailFragment extends Fragment {
 
         final TextView tvDate = (TextView) mView.findViewById(R.id.detail_date);
         final TextView tvRating = (TextView) mView.findViewById(R.id.detail_rating);
+        final CardView cardView = (CardView) mView.findViewById(R.id.detail_card_view);
 
         if (mMovieInfo.mImagepath != null && !mMovieInfo.mImagepath.isEmpty() && mImages && !mTwoPane) {
             Picasso.with(getContext())
@@ -171,85 +175,36 @@ public class DetailFragment extends Fragment {
                         @Override
                         public void onSuccess() {
                             if (isAdded()) {
-                                ivImagepath.setVisibility(View.VISIBLE);
+                                cardView.setVisibility(View.VISIBLE);
 
                                 TextView tvOverviewHeading = (TextView) mView.findViewById(R.id.detail_overview_heading);
                                 RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams)
                                         tvOverviewHeading.getLayoutParams();
-                                tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_imagepath);
+                                tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_card_view);
                                 tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
-
-                                TextView tvDateLabel = (TextView) mView.findViewById(R.id.detail_date_label);
-                                RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
-                                tvDateLabelParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
-                                tvDateLabel.setLayoutParams(tvDateLabelParams);
-
-                                RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
-                                tvDateParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
-                                tvDate.setLayoutParams(tvDateParams);
-
-                                TextView tvRatingLabel = (TextView) mView.findViewById(R.id.detail_rating_label);
-                                RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
-                                tvRatingLabelParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
-                                tvRatingLabel.setLayoutParams(tvRatingLabelParams);
-
-                                RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
-                                tvRatingParams.setMarginStart((int) getResources().getDimension(R.dimen.normal_layout_margin));
-                                tvRating.setLayoutParams(tvRatingParams);
                             }
                         }
 
                         @Override
                         public void onError() {
                             if (isAdded()) {
-                                ivImagepath.setVisibility(View.GONE);
+                                cardView.setVisibility(View.GONE);
 
                                 TextView tvOverviewHeading = (TextView) mView.findViewById(R.id.detail_overview_heading);
                                 RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
                                 tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
                                 tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
-
-                                TextView tvDateLabel = (TextView) mView.findViewById(R.id.detail_date_label);
-                                RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
-                                tvDateLabelParams.setMarginStart(0);
-                                tvDateLabel.setLayoutParams(tvDateLabelParams);
-
-                                RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
-                                tvDateParams.setMarginStart(0);
-                                tvDate.setLayoutParams(tvDateParams);
-
-                                TextView tvRatingLabel = (TextView) mView.findViewById(R.id.detail_rating_label);
-                                RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
-                                tvRatingLabelParams.setMarginStart(0);
-                                tvRatingLabel.setLayoutParams(tvRatingLabelParams);
-
-                                RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
-                                tvRatingParams.setMarginStart(0);
-                                tvRating.setLayoutParams(tvRatingParams);
                             }
                         }
                     });
         }
         else {
-            ivImagepath.setVisibility(View.GONE);
+            cardView.setVisibility(View.GONE);
 
             TextView tvOverviewHeading = (TextView) mView.findViewById(R.id.detail_overview_heading);
             RelativeLayout.LayoutParams tvOverviewHeadingParams = (RelativeLayout.LayoutParams) tvOverviewHeading.getLayoutParams();
             tvOverviewHeadingParams.addRule(RelativeLayout.BELOW, R.id.detail_rating);
-
-            TextView tvDateLabel = (TextView) mView.findViewById(R.id.detail_date_label);
-            RelativeLayout.LayoutParams tvDateLabelParams = (RelativeLayout.LayoutParams) tvDateLabel.getLayoutParams();
-            tvDateLabelParams.setMarginStart(0);
-
-            RelativeLayout.LayoutParams tvDateParams = (RelativeLayout.LayoutParams) tvDate.getLayoutParams();
-            tvDateParams.setMarginStart(0);
-
-            TextView tvRatingLabel = (TextView) mView.findViewById(R.id.detail_rating_label);
-            RelativeLayout.LayoutParams tvRatingLabelParams = (RelativeLayout.LayoutParams) tvRatingLabel.getLayoutParams();
-            tvRatingLabelParams.setMarginStart(0);
-
-            RelativeLayout.LayoutParams tvRatingParams = (RelativeLayout.LayoutParams) tvRating.getLayoutParams();
-            tvRatingParams.setMarginStart(0);
+            tvOverviewHeading.setLayoutParams(tvOverviewHeadingParams);
         }
 
         tvDate.setText(mMovieInfo.mDate);
@@ -514,20 +469,33 @@ public class DetailFragment extends Fragment {
             for (int i = 0; i < mMovieVideos.length; i++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
                     if (mImages) {
-                        YouTubePreview youTubePreview = new YouTubePreview(getContext());
+                        CardView cardView = new CardView(getContext());
                         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        lp.setMargins(0, (int) getResources().getDimension(R.dimen.normal_layout_margin),
-                                0,  (int) getResources().getDimension(R.dimen.normal_layout_margin));
-                        youTubePreview.setLayoutParams(lp);
+                        int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
+                        lp.setMargins(margin, margin, margin, margin);
+                        cardView.setLayoutParams(lp);
+                        ViewCompat.setElevation(cardView, getResources().getDimensionPixelSize(R.dimen.cardview_default_elevation));
+                        cardView.setRadius(getResources().getDimensionPixelSize(R.dimen.cardview_default_radius));
+                        linearLayout.addView(cardView);
+
+                        YouTubePreview youTubePreview = new YouTubePreview(getContext());
+                        CardView.LayoutParams lp2 = new CardView.LayoutParams(
+                                CardView.LayoutParams.MATCH_PARENT, CardView.LayoutParams.WRAP_CONTENT);
+                        int margin2 = getResources().getDimensionPixelSize(R.dimen.normal_layout_margin);
+                        lp2.setMargins(margin2, margin2, margin2, margin2);
+                        youTubePreview.setLayoutParams(lp2);
                         youTubePreview.setContent(mMovieVideos[i][0], mMovieVideos[i][1],
                                 getResources().getDimension(R.dimen.subheading_text_size));
-                        linearLayout.addView(youTubePreview);
+                        cardView.addView(youTubePreview);
                     } else {
                         final String key = mMovieVideos[i][0];
                         Button bVideo = new Button(getContext());
-                        bVideo.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT));
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
+                        lp.setMargins(margin, margin, margin, margin);
+                        bVideo.setLayoutParams(lp);
                         bVideo.setText(mMovieVideos[i][1]);
                         bVideo.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
@@ -680,27 +648,22 @@ public class DetailFragment extends Fragment {
             tvEmpty.setVisibility(View.GONE);
             for (int i = 0; i < mMovieReviews.length; i++) {
                 if (i > 0) {
-                    Configuration config = getResources().getConfiguration();
-                    int screenWidthDp = config.screenWidthDp;
-                    int screenWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                            screenWidthDp, getResources().getDisplayMetrics());
-                    int dividerHeightPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                            getResources().getDimension(R.dimen.text_divider_height),
-                            getResources().getDisplayMetrics());
-                    int dividerMarginPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-                            getResources().getDimension(R.dimen.text_divider_margin),
-                            getResources().getDisplayMetrics());
-
                     ImageView iv = new ImageView(getActivity());
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(screenWidthPx, dividerHeightPx);
-                    lp.setMargins(0, dividerMarginPx, 0, dividerMarginPx);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            getResources().getDimensionPixelSize(R.dimen.text_divider_height));
+                    int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
+                    lp.setMargins(margin, margin , margin, margin * 2);
                     iv.setLayoutParams(lp);
-                    iv.setBackgroundColor(Color.LTGRAY);
+                    iv.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
                     linearLayout.addView(iv);
                 }
                 TextView tv = new TextView(getActivity());
-                tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
+                lp.setMargins(margin, 0, margin, margin);
+                tv.setLayoutParams(lp);
                 tv.setText(mMovieReviews[i][1] + "\n--" + mMovieReviews[i][0]);
                 linearLayout.addView(tv);
             }
