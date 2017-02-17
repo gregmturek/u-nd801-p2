@@ -25,6 +25,7 @@
 
     <string name="download_dialog">Descargando…</string>
 
+    <string name="tmdb" translatable="false">TMDB</string>
     <string name="imdb" translatable="false">IMDB</string>
 
     <!-- Strings related to Settings -->

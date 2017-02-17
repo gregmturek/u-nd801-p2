@@ -502,6 +502,7 @@ public class DetailFragment extends Fragment {
                         lp.setMargins(margin, margin, margin, margin);
                         bVideo.setLayoutParams(lp);
                         bVideo.setText(mMovieVideos[i][1]);
+                        bVideo.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
                         bVideo.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 YouTubePreview ytp = new YouTubePreview(getContext());
@@ -795,23 +796,43 @@ public class DetailFragment extends Fragment {
 
     private void showOther(){
         if (mMovieOthers.length > 0) {
-            LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_imdb_layout);
-            final String url = "http://www.imdb.com/title/" + mMovieOthers[0][0];
-            Button bLink = new Button(getContext());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_link_layout);
+
+            final String urlTmdb = "http://www.themoviedb.org/movie/" + mMovieInfo.mId;
+            Button bLinkTmdb = new Button(getContext());
+            LinearLayout.LayoutParams lpTmdb = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
             int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
-            lp.setMargins(margin, margin, margin, margin);
-            bLink.setLayoutParams(lp);
-            bLink.setText(R.string.imdb);
-            bLink.setOnClickListener(new View.OnClickListener() {
+            lpTmdb.setMargins(margin, margin, margin, margin);
+            bLinkTmdb.setLayoutParams(lpTmdb);
+            bLinkTmdb.setText(R.string.tmdb);
+            bLinkTmdb.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+            bLinkTmdb.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
+                    i.setData(Uri.parse(urlTmdb));
                     startActivity(i);
                 }
             });
-            linearLayout.addView(bLink);
+            linearLayout.addView(bLinkTmdb);
+
+            final String urlImdb = "http://www.imdb.com/title/" + mMovieOthers[0][0];
+            Button bLinkImdb = new Button(getContext());
+            LinearLayout.LayoutParams lpImdb = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+            int marginImdb = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
+            lpImdb.setMargins(marginImdb, marginImdb, marginImdb, marginImdb);
+            bLinkImdb.setLayoutParams(lpImdb);
+            bLinkImdb.setText(R.string.imdb);
+            bLinkImdb.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+            bLinkImdb.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(urlImdb));
+                    startActivity(i);
+                }
+            });
+            linearLayout.addView(bLinkImdb);
         }
     }
 
