@@ -3,6 +3,7 @@ package com.zythem.popularmovies;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -70,6 +71,7 @@ public class DetailFragment extends Fragment {
 
     private String[][] mMovieVideos = new String[0][0];
     private String[][] mMovieReviews = new String[0][0];
+    private String[][] mMovieOthers = new String[0][0];
 
     private View mView;
     private int mDivisor;
@@ -114,6 +116,9 @@ public class DetailFragment extends Fragment {
     }
 
     public void fetchVideosAndReviews() {
+        FetchOtherTask fetchOtherTask = new FetchOtherTask();
+        fetchOtherTask.execute(mMovieInfo.mId);
+
         FetchVideoTask fetchVideoTask = new FetchVideoTask();
         fetchVideoTask.execute(mMovieInfo.mId);
 
@@ -669,4 +674,146 @@ public class DetailFragment extends Fragment {
             }
         }
     }
+
+    public class FetchOtherTask extends AsyncTask<String, Void, String[][]> {
+        ProgressDialog dialog;
+
+        private final String LOG_TAG = FetchOtherTask.class.getSimpleName();
+
+        private String[][] getOtherDataFromJson(String otherJsonStr)
+                throws JSONException {
+
+            // These are the names of the JSON objects that need to be extracted.
+            final String TMDB_IMDBID = "imdb_id";
+
+            JSONObject otherJson = new JSONObject(otherJsonStr);
+
+            String[][] resultStrs = new String[1][1];
+
+            resultStrs[0][0] = otherJson.getString(TMDB_IMDBID);
+
+            return resultStrs;
+        }
+
+        @Override
+        protected String[][] doInBackground(String... params) {
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr;
+
+            try {
+                // Construct the URL
+                final String MOVIE_BASE_URL =
+                        "http://api.themoviedb.org/3/movie/" + params[0] + "?";
+                final String APIKEY_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendQueryParameter(APIKEY_PARAM, BuildConfig.THE_MOVIE_DATABASE_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                // Create the request and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line);
+                    buffer.append("\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                movieJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the data, there's no point in attempting
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            try {
+                return getOtherDataFromJson(movieJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing.
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getContext());
+            dialog.setMessage(getString(R.string.download_dialog));
+            dialog.setIndeterminate(true);
+            dialog.show();
+        }
+        @Override
+        protected void onPostExecute(String[][] result) {
+            if (result != null) {
+                mMovieOthers = result;
+                // New data is back from the server.  Hooray!
+            }
+            showOther();
+            dialog.dismiss();
+        }
+    }
+
+    private void showOther(){
+        if (mMovieOthers.length > 0) {
+            LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_imdb_layout);
+            final String url = "http://www.imdb.com/title/" + mMovieOthers[0][0];
+            Button bLink = new Button(getContext());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
+            lp.setMargins(margin, margin, margin, margin);
+            bLink.setLayoutParams(lp);
+            bLink.setText(R.string.imdb);
+            bLink.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    startActivity(i);
+                }
+            });
+            linearLayout.addView(bLink);
+        }
+    }
+
+
 }

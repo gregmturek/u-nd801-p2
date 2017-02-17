@@ -96,8 +96,10 @@ class MoviesAdapter extends CursorRecyclerViewAdapter<MoviesAdapter.ViewHolder> 
         mCardImageHeight = (int) Math.round(mCardImageWidth * 1.5);
 
         //convert dp to pixels
-        mCardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageWidth, context.getResources().getDisplayMetrics());
-        mCardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mCardImageHeight, context.getResources().getDisplayMetrics());
+        mCardImageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mCardImageWidth,
+                context.getResources().getDisplayMetrics());
+        mCardImageHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mCardImageHeight,
+                context.getResources().getDisplayMetrics());
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         boolean defaultValue = context.getResources().getBoolean(R.bool.images_switch_default);

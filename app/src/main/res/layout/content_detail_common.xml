@@ -22,11 +22,19 @@
 
     </android.support.v7.widget.CardView>
 
+    <LinearLayout
+        android:id="@+id/detail_imdb_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/detail_card_view"/>
+
     <TextView
         android:id="@+id/detail_date_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/detail_card_view"
+        android:layout_below="@id/detail_imdb_layout"
         android:layout_marginTop="@dimen/card_layout_margin"
         android:layout_marginStart="@dimen/card_layout_margin"
         android:layout_marginEnd="@dimen/card_layout_margin"
@@ -87,7 +95,6 @@
         android:layout_marginBottom="@dimen/card_layout_margin" />
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/detail_videos_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
