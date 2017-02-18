@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
     private NetworkChangeReceiver mReceiver;
     private boolean mIsConnected = true;
 
+    public int mViewPagerPosition = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                mViewPagerPosition = position;
+
                 switch (position) {
                     case 0:
                         TabFragment tabFragment1 = (TabFragment) getSupportFragmentManager().getFragments().get(0);
@@ -173,16 +177,21 @@ public class MainActivity extends AppCompatActivity {
                         if (!mIsConnected) {
                             mIsConnected = true;
 
-                            TabFragment tabFragment1 = (TabFragment) getSupportFragmentManager().getFragments().get(0);
-                            if (tabFragment1 != null) {
-                                tabFragment1.refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES,
-                                        MovieContentProvider.Path.MOST_POPULAR);
-                            }
-
-                            TabFragment tabFragment2 = (TabFragment) getSupportFragmentManager().getFragments().get(1);
-                            if (tabFragment2 != null) {
-                                tabFragment2.refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES,
-                                        MovieContentProvider.Path.TOP_RATED);
+                            switch (mViewPagerPosition) {
+                                case 0:
+                                    TabFragment tabFragment1 = (TabFragment) getSupportFragmentManager().getFragments().get(0);
+                                    if (tabFragment1 != null) {
+                                        tabFragment1.refetchDataIfNecessary(MovieContentProvider.MostPopular.MOVIES,
+                                                MovieContentProvider.Path.MOST_POPULAR);
+                                    }
+                                    break;
+                                case 1:
+                                    TabFragment tabFragment2 = (TabFragment) getSupportFragmentManager().getFragments().get(1);
+                                    if (tabFragment2 != null) {
+                                        tabFragment2.refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES,
+                                                MovieContentProvider.Path.TOP_RATED);
+                                    }
+                                    break;
                             }
 
                             if (mTwoPane) {
@@ -381,7 +390,6 @@ public class MainActivity extends AppCompatActivity {
                     refetchDataIfNecessary(MovieContentProvider.TopRated.MOVIES, MovieContentProvider.Path.TOP_RATED);
                     break;
             }
-
             getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
             super.onActivityCreated(savedInstanceState);
@@ -417,40 +425,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-/*
-        @Override
-        public void onStart() {
-            super.onStart();
-            if (mTwoPane && mTabNum == 1 && getActivity().findViewById(R.id.detail_videos_layout) == null) {
-                MovieDataToPass movieInfo = new MovieDataToPass();
-                Cursor c = null;
-                try {
-                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
-                            null, null, null, null);
-
-                    if(c != null) {
-                        c.moveToFirst();
-
-                        movieInfo.mTitle = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
-                        movieInfo.mImagepath = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
-                        movieInfo.mDate = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_DATE));
-                        movieInfo.mRating = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_RATING));
-                        movieInfo.mId = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_ID));
-                        movieInfo.mOverview = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
-                        movieInfo.mImagepath2 = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
-
-                        ((MainActivity)getActivity()).loadTabletDetailFragment(movieInfo);
-                    }
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Error ", e);
-                } finally {
-                    if(c != null){
-                        c.close();
-                    }
-                }
-            }
-        }
-*/
 
         public void refetchDataIfNecessary(Uri uriType, String pathType) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -459,28 +433,43 @@ public class MainActivity extends AppCompatActivity {
             String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
 
             long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
-            long updateDate = sharedPref.getLong("last_update", 0);
+            long updateDate1 = sharedPref.getLong("last_update_1", 0);
+            long updateDate2 = sharedPref.getLong("last_update_2", 0);
             long currentDate = System.currentTimeMillis() / MILLIS_PER_DAY;
             Boolean needUpdate = false;
-            if (updateDate != currentDate) {
-                needUpdate = true;
+            switch (mTabNum) {
+                case 1:
+                    if (updateDate1 != currentDate) {
+                        needUpdate = true;
+                    }
+                    break;
+                case 2:
+                    if (updateDate2 != currentDate) {
+                        needUpdate = true;
+                    }
+                    break;
             }
 
             Cursor c = null;
 
             try {
-                c = getActivity().getContentResolver().query(uriType,
-                        null, null, null, null);
+                c = getActivity().getContentResolver().query(uriType, null, null, null, null);
 
                 if (c == null || c.getCount() == 0 || c.getCount() != Integer.parseInt(pages) * 20 || needUpdate) {
-                    getActivity().getContentResolver().delete(MovieContentProvider.MostPopular.MOVIES, null, null);
-                    getActivity().getContentResolver().delete(MovieContentProvider.TopRated.MOVIES, null, null);
+                    getActivity().getContentResolver().delete(uriType, null, null);
 
                     FetchMovieTask fetchMovieTask = new FetchMovieTask();
                     fetchMovieTask.execute(pathType, pages);
 
                     SharedPreferences.Editor edit = sharedPref.edit();
-                    edit.putLong("last_update", currentDate);
+                    switch (mTabNum) {
+                        case 1:
+                            edit.putLong("last_update_1", currentDate);
+                            break;
+                        case 2:
+                            edit.putLong("last_update_2", currentDate);
+                            break;
+                    }
                     edit.apply();
                 } else {
                     showInitialTabletDetailFragment();
