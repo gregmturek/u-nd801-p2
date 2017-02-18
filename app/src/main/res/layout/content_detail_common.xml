@@ -24,7 +24,7 @@
 
     <LinearLayout
         android:id="@+id/detail_link_layout"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/detail_card_view"/>
@@ -110,6 +110,11 @@
             android:layout_marginEnd="@dimen/card_layout_margin"
             android:textSize="@dimen/heading_text_size"
             android:text="@string/videos"/>
+
+        <android.support.v7.widget.GridLayout
+            android:id="@+id/detail_youtube_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <!-- empty section -->
         <TextView

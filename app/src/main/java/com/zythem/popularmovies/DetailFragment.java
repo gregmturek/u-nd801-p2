@@ -24,6 +24,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -111,11 +112,11 @@ public class DetailFragment extends Fragment {
     }
 
     public void reInit() {
-        fetchVideosAndReviews();
+        fetchVideosReviewsOther();
         loadContent();
     }
 
-    public void fetchVideosAndReviews() {
+    public void fetchVideosReviewsOther() {
         FetchOtherTask fetchOtherTask = new FetchOtherTask();
         fetchOtherTask.execute(mMovieInfo.mId);
 
@@ -226,7 +227,7 @@ public class DetailFragment extends Fragment {
 
         mView = view;
 
-        fetchVideosAndReviews();
+        fetchVideosReviewsOther();
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             mDivisor = 2;
@@ -467,22 +468,46 @@ public class DetailFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_videos_layout);
         TextView tvEmpty = (TextView) getActivity().findViewById(R.id.detail_videos_empty);
 
+        GridLayout gridLayout = (GridLayout) getActivity().findViewById(R.id.detail_youtube_grid);
+        gridLayout.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
+        int total = mMovieVideos.length;
+        int columns = Math.abs(mDivisor - 3);
+        int rows = (total / columns) + 1;
+        gridLayout.setColumnCount(columns);
+        gridLayout.setRowCount(rows);
+
         if (mMovieVideos.length == 0) {
             tvEmpty.setVisibility(View.VISIBLE);
         } else {
             tvEmpty.setVisibility(View.GONE);
-            for (int i = 0; i < mMovieVideos.length; i++) {
+
+            Configuration config = getResources().getConfiguration();
+            int screenWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, config.screenWidthDp,
+                    getResources().getDisplayMetrics());
+            int cvWidth = (screenWidthPx
+                    - getResources().getDimensionPixelSize(R.dimen.card_layout_margin) * 2 // page margins
+                    - (getResources().getDimensionPixelSize(R.dimen.card_layout_margin) * 2 * columns)) // card margins
+                    / columns;
+
+            for (int i = 0, c = 0, r = 0; i < total; i++, c++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
                     if (mImages) {
+                        if(c == columns) {
+                            c = 0;
+                            r++;
+                        }
                         CardView cardView = new CardView(getContext());
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+                        lp.width = cvWidth;
+                        lp.height = GridLayout.LayoutParams.WRAP_CONTENT;
+                        lp.columnSpec = GridLayout.spec(c);
+                        lp.rowSpec = GridLayout.spec(r);
                         int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
                         lp.setMargins(margin, margin, margin, margin);
                         cardView.setLayoutParams(lp);
                         ViewCompat.setElevation(cardView, getResources().getDimensionPixelSize(R.dimen.cardview_default_elevation));
                         cardView.setRadius(getResources().getDimensionPixelSize(R.dimen.cardview_default_radius));
-                        linearLayout.addView(cardView);
+                        gridLayout.addView(cardView);
 
                         YouTubePreview youTubePreview = new YouTubePreview(getContext());
                         CardView.LayoutParams lp2 = new CardView.LayoutParams(
@@ -797,6 +822,14 @@ public class DetailFragment extends Fragment {
     private void showOther(){
         if (mMovieOthers.length > 0) {
             LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_link_layout);
+            switch (mDivisor) {
+                case 1:
+                    linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    break;
+                case 2:
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+                    break;
+            }
 
             final String urlTmdb = "http://www.themoviedb.org/movie/" + mMovieInfo.mId;
             Button bLinkTmdb = new Button(getContext());
