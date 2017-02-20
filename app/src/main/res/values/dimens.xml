@@ -9,14 +9,12 @@
     <!--0dp is set programmatically.-->
 
     <dimen name="appbar_padding_top">0dp</dimen>
-
     <dimen name="app_bar_height">0dp</dimen>
+    <dimen name="appbar_elevation">4dp</dimen>
 
     <dimen name="text_margin">16dp</dimen>
 
     <dimen name="card_layout_margin">4dp</dimen>
-    <dimen name="card_cardCornerRadius">2dp</dimen>
-    <dimen name="card_elevation">2dp</dimen>
 
     <dimen name="normal_layout_margin">8dp</dimen>
 

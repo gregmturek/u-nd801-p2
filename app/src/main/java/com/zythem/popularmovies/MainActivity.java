@@ -1,5 +1,8 @@
 package com.zythem.popularmovies;
 
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderOperation;
@@ -14,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.preference.PreferenceActivity;
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -349,6 +354,39 @@ public class MainActivity extends AppCompatActivity {
             });
 
             mRv.setAdapter(mCursorAdapter);
+
+            final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+            if (null != toolbar) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            StateListAnimator stateListAnimator = new StateListAnimator();
+                            if (0 == mRv.computeVerticalScrollOffset()) {
+                                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(toolbar, "elevation", 0));
+                                toolbar.setStateListAnimator(stateListAnimator);
+                            } else {
+                                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(toolbar, "elevation",
+                                        getResources().getDimension(R.dimen.appbar_elevation)));
+                                toolbar.setStateListAnimator(stateListAnimator);
+                            }
+                        }
+                    });
+                } else {
+                    final View view = getActivity().findViewById(R.id.toolbar_shadow);
+                    mRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            if (0 == mRv.computeVerticalScrollOffset()) {
+                                view.setVisibility(View.INVISIBLE);
+                            } else {
+                                view.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+            }
 
             checkIfAdapterIsEmpty();
 
