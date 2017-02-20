@@ -375,13 +375,14 @@ public class MainActivity extends AppCompatActivity {
                     });
                 } else {
                     final View view = getActivity().findViewById(R.id.toolbar_shadow);
+                    view.setVisibility(View.VISIBLE);
                     mRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override
                         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                             if (0 == mRv.computeVerticalScrollOffset()) {
-                                view.setVisibility(View.INVISIBLE);
+                                view.animate().alpha(0).setDuration(250);
                             } else {
-                                view.setVisibility(View.VISIBLE);
+                                view.animate().alpha(1).setDuration(250);
                             }
                         }
                     });
