@@ -21,7 +21,7 @@
     <dimen name="poster_layout_width">0dp</dimen>
     <dimen name="poster_layout_height">0dp</dimen>
 
-    <dimen name="detail_layout_margin_bottom">22dp</dimen>
+    <dimen name="detail_layout_margin_bottom">4dp</dimen>
 
     <dimen name="heading_text_size">22sp</dimen>
 

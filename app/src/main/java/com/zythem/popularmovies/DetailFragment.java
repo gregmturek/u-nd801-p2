@@ -77,6 +77,7 @@ public class DetailFragment extends Fragment {
     private View mView;
     private int mDivisor;
     private int mScreenHeightDp;
+    private int mActionBarHeight;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -158,13 +159,13 @@ public class DetailFragment extends Fragment {
                 / getResources().getDisplayMetrics().density;
         int ivImagepathHeight = (mScreenHeightDp / mDivisor) - (Math.round(marginValue) * 2);
         ivImagepathHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ivImagepathHeight, getResources().getDisplayMetrics());
+        TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
+                new int[]{R.attr.actionBarSize}
+        );
+        mActionBarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
         if(mDivisor == 1) {
-            final TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
-                    new int[]{R.attr.actionBarSize}
-            );
-            int actionBarHeight = (int) styledAttributes.getDimension(0, 0);
-            styledAttributes.recycle();
-            ivImagepathHeight -= actionBarHeight;
+            ivImagepathHeight -= mActionBarHeight;
         }
         ivImagepath.getLayoutParams().width = (int) Math.round(ivImagepathHeight / 1.5);
         ivImagepath.getLayoutParams().height = ivImagepathHeight;
@@ -484,10 +485,14 @@ public class DetailFragment extends Fragment {
             Configuration config = getResources().getConfiguration();
             int screenWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, config.screenWidthDp,
                     getResources().getDisplayMetrics());
+            if (mTwoPane) {
+                screenWidthPx /= 2;
+            }
             int cvWidth = (screenWidthPx
                     - getResources().getDimensionPixelSize(R.dimen.card_layout_margin) * 2 // page margins
                     - (getResources().getDimensionPixelSize(R.dimen.card_layout_margin) * 2 * columns)) // card margins
-                    / columns;
+                    / columns
+                    ;
 
             for (int i = 0, c = 0, r = 0; i < total; i++, c++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
@@ -672,6 +677,15 @@ public class DetailFragment extends Fragment {
     private void showReviews(){
         LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_reviews_layout);
         TextView tvEmpty = (TextView) getActivity().findViewById(R.id.detail_reviews_empty);
+
+        if (mTwoPane) {
+            int bottomMargin = getResources().getDimensionPixelSize(R.dimen.detail_layout_margin_bottom);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 0, 0, bottomMargin + mActionBarHeight);
+            layoutParams.addRule(RelativeLayout.BELOW, R.id.detail_videos_layout);
+            linearLayout.setLayoutParams(layoutParams);
+        }
 
         if (mMovieReviews.length == 0) {
             tvEmpty.setVisibility(View.VISIBLE);
