@@ -24,7 +24,6 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -469,13 +468,8 @@ public class DetailFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.detail_videos_layout);
         TextView tvEmpty = (TextView) getActivity().findViewById(R.id.detail_videos_empty);
 
-        GridLayout gridLayout = (GridLayout) getActivity().findViewById(R.id.detail_youtube_grid);
-        gridLayout.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
         int total = mMovieVideos.length;
         int columns = Math.abs(mDivisor - 3);
-        int rows = (total / columns) + 1;
-        gridLayout.setColumnCount(columns);
-        gridLayout.setRowCount(rows);
 
         if (mMovieVideos.length == 0) {
             tvEmpty.setVisibility(View.VISIBLE);
@@ -494,25 +488,32 @@ public class DetailFragment extends Fragment {
                     / columns
                     ;
 
-            for (int i = 0, c = 0, r = 0; i < total; i++, c++) {
+            LinearLayout linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column);
+            if (columns == 1) {
+                linearLayoutColumn.setOrientation(LinearLayout.VERTICAL);
+            } else {
+                linearLayoutColumn.setOrientation(LinearLayout.HORIZONTAL);
+            }
+            for (int i = 0, c = 0; i < total; i++, c++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
                     if (mImages) {
-                        if(c == columns) {
-                            c = 0;
-                            r++;
+                        if (columns != 1) {
+                            if(c == columns) {
+                                c = 0;
+                                linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column_2);
+                            } else {
+                                linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column_1);
+                            }
                         }
+
                         CardView cardView = new CardView(getContext());
-                        GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
-                        lp.width = cvWidth;
-                        lp.height = GridLayout.LayoutParams.WRAP_CONTENT;
-                        lp.columnSpec = GridLayout.spec(c);
-                        lp.rowSpec = GridLayout.spec(r);
+                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(cvWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
                         int margin = getResources().getDimensionPixelSize(R.dimen.card_layout_margin);
                         lp.setMargins(margin, margin, margin, margin);
                         cardView.setLayoutParams(lp);
                         ViewCompat.setElevation(cardView, getResources().getDimensionPixelSize(R.dimen.cardview_default_elevation));
                         cardView.setRadius(getResources().getDimensionPixelSize(R.dimen.cardview_default_radius));
-                        gridLayout.addView(cardView);
+                        linearLayoutColumn.addView(cardView);
 
                         YouTubePreview youTubePreview = new YouTubePreview(getContext());
                         CardView.LayoutParams lp2 = new CardView.LayoutParams(
