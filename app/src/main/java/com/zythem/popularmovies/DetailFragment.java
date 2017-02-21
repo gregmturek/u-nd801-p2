@@ -494,15 +494,19 @@ public class DetailFragment extends Fragment {
             } else {
                 linearLayoutColumn.setOrientation(LinearLayout.HORIZONTAL);
             }
-            for (int i = 0, c = 0; i < total; i++, c++) {
+            for (int i = 0, c = 0; i < total; i++) {
                 if (mMovieVideos[i][2].equals("YouTube")) {
                     if (mImages) {
-                        if (columns != 1) {
-                            if(c == columns) {
-                                c = 0;
-                                linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column_2);
-                            } else {
-                                linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column_1);
+                        if (columns == 2) {
+                            switch (c) {
+                                case 0:
+                                    linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column_1);
+                                    c = 1;
+                                    break;
+                                case 1:
+                                    linearLayoutColumn = (LinearLayout) getActivity().findViewById(R.id.detail_youtube_column_2);
+                                    c = 0;
+                                    break;
                             }
                         }
 
