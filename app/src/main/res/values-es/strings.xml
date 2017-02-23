@@ -54,6 +54,7 @@
 
     <string name="pref_title_images">Habilitar las imágenes</string>
     <string name="pref_description_images">Activar o desactivar las imágines</string>
+    <string name="widget_title">Popular Movies</string>
 
     <!--
         <string name="pref_title_social_recommendations">Enable social recommendations</string>

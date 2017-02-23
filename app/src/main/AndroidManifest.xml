@@ -41,7 +41,18 @@
         <provider
             android:authorities="com.zythem.popularmovies.MovieContentProvider"
             android:name="com.zythem.popularmovies.generated.MovieContentProvider"
-            android:exported="false"/>
+            android:exported="true"/>
+        <!-- Widget -->
+        <receiver
+            android:name=".WidgetProvider"
+            android:label="@string/widget_title" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+        <service android:name=".WidgetIntentService" />
     </application>
 
 </manifest>
