@@ -4,7 +4,9 @@ import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.Intent;
@@ -554,6 +556,12 @@ public class MainActivity extends AppCompatActivity {
                 getActivity().getContentResolver().applyBatch(AUTHORITY, batchOperations);
             } catch(RemoteException | OperationApplicationException e){
                 Log.e(LOG_TAG, "Error applying batch insert all", e);
+            } finally {
+                //Update detail widgets
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getContext());
+                int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                        new ComponentName(getContext(), WidgetDetailProvider.class));
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_detail_list);
             }
         }
 

@@ -63,30 +63,8 @@ public class WidgetDetailProvider extends AppWidgetProvider {
     private void setRemoteAdapter(Context context, @NonNull final RemoteViews views, int appWidgetId/*, AppWidgetManager appWidgetManager*/) {
         Intent intent = new Intent(context, WidgetDetailRemoteViewsService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-/*
-        MyAppWidgetManager myAppWidgetManager = new MyAppWidgetManager(appWidgetManager);
-        intent.putExtra("MYAPPWIDGETMANAGER", myAppWidgetManager);
-*/
         views.setRemoteAdapter(R.id.widget_detail_list, intent);
     }
-
-/*
-    public class MyAppWidgetManager implements Serializable {
-        private AppWidgetManager appWidgetManager;
-
-        public MyAppWidgetManager(AppWidgetManager appWidgetManager) {
-            this.appWidgetManager = appWidgetManager;
-        }
-
-        public AppWidgetManager getAppWidgetManager() {
-            return appWidgetManager;
-        }
-
-        public void setAppWidgetManager(AppWidgetManager appWidgetManager) {
-            this.appWidgetManager = appWidgetManager;
-        }
-    }
-*/
 
 /*
     @Override
