@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_detail_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/widget_layout_margin">
+
+    <TextView
+        android:id="@+id/widget_detail_movie_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_alignStart="@+id/widget_detail_movie_image"
+        android:layout_alignEnd="@+id/widget_detail_movie_image"
+        android:textSize="@dimen/widget_text_size"
+        android:textColor="@color/widget_text">
+    </TextView>
+
+    <TextView
+        android:id="@+id/widget_detail_movie_title_no_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/widget_text_size"
+        android:textColor="@color/widget_text">
+    </TextView>
+
+    <ImageView
+        android:id="@+id/widget_detail_movie_image"
+        android:contentDescription="@string/cd_movie_poster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+    </ImageView>
+
+<!--
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_image"
+        android:layout_alignStart="@+id/iv_image">
+    </TextView>
+
+    <TextView
+        android:id="@+id/tv_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_image"
+        android:layout_alignEnd="@+id/iv_image">
+    </TextView>
+-->
+
+</RelativeLayout>

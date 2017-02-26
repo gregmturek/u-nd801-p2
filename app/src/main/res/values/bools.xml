@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="images_switch_default">true</bool>
+
+    <!-- Widget Detail -->
+    <bool name="widget_detail_enabled">true</bool>
+    <bool name="use_detail_activity">true</bool>
 </resources>
