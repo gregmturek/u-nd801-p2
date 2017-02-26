@@ -14,19 +14,10 @@ import android.widget.RemoteViews;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Random;
+
 public class WidgetIntentService extends IntentService {
     private static final String LOG_TAG = WidgetIntentService.class.getSimpleName();
-/*
-    private static final String[] FORECAST_COLUMNS = {
-            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
-            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
-            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP
-    };
-    // these indices must match the projection
-    private static final int INDEX_WEATHER_ID = 0;
-    private static final int INDEX_SHORT_DESC = 1;
-    private static final int INDEX_MAX_TEMP = 2;
-*/
 
     public WidgetIntentService() {
         super("WidgetIntentService");
@@ -45,50 +36,26 @@ public class WidgetIntentService extends IntentService {
         String pathType = MovieContentProvider.Path.MOST_POPULAR;
         Cursor c = getContentResolver().query(uriType, null, null, null, null);
 
-        Log.d(LOG_TAG, "service called");
-
-
         if (c == null) {
             Log.d(LOG_TAG, "null cursor");
             return;
         }
 
-        if (!c.moveToFirst()) {
+        int max = 19;
+        int min = 0;
+        Random random = new Random();
+        int position = random.nextInt(max - min + 1) + min;
+
+        if (!c.moveToPosition(position)) {
             c.close();
-            Log.d(LOG_TAG, "not cursor move to first ");
+            Log.d(LOG_TAG, "not cursor move to position ");
             return;
         }
-
-
-
-/*
-        String location = Utility.getPreferredLocation(this);
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-                location, System.currentTimeMillis());
-        Cursor data = getContentResolver().query(weatherForLocationUri, FORECAST_COLUMNS, null,
-                null, WeatherContract.WeatherEntry.COLUMN_DATE + " ASC");
-        if (data == null) {
-            return;
-        }
-        if (!data.moveToFirst()) {
-            data.close();
-            return;
-        }
-*/
 
         // Extract the data from the Cursor
 
         String movieTitle = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
         final String movieImagepath = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
-
-/*
-        int weatherId = data.getInt(INDEX_WEATHER_ID);
-        int weatherArtResourceId = Utility.getArtResourceForWeatherCondition(weatherId);
-        String description = data.getString(INDEX_SHORT_DESC);
-        double maxTemp = data.getDouble(INDEX_MAX_TEMP);
-        String formattedMaxTemperature = Utility.formatTemperature(this, maxTemp);
-        data.close();
-*/
 
         // Perform this loop procedure for each Today widget
         for (int appWidgetId : appWidgetIds) {
@@ -99,25 +66,6 @@ public class WidgetIntentService extends IntentService {
 
             views.setTextViewText(R.id.widget_heading, "Popular Movies");
             views.setTextViewText(R.id.widget_movie_title, movieTitle);
-
-/*
-            Target target = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    views.setImageViewBitmap(R.id.widget_movie_image , bitmap);
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-            };
-*/
 
             if (movieImagepath != null && !movieImagepath.isEmpty()) {
                 //Run Picasso on the main thread
