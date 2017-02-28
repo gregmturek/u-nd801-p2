@@ -3,7 +3,6 @@ package com.zythem.popularmovies;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -18,7 +17,7 @@ public class WidgetDetailProvider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_detail);
 
             // Set heading text
-            views.setTextViewText(R.id.widget_detail_heading, "Popular Movies");
+            views.setTextViewText(R.id.widget_detail_heading, context.getResources().getString(R.string.app_name));
 
             // Create an Intent to launch MainActivity
             Intent intent = new Intent(context, MainActivity.class);
@@ -43,6 +42,7 @@ public class WidgetDetailProvider extends AppWidgetProvider {
         }
     }
 
+/*
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
@@ -53,6 +53,7 @@ public class WidgetDetailProvider extends AppWidgetProvider {
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_detail_list);
 //        }
     }
+*/
 
 
     /**

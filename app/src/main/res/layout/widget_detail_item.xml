@@ -9,9 +9,12 @@
         android:id="@+id/widget_detail_movie_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textAlignment="center"
+        android:gravity="center"
         android:layout_alignStart="@+id/widget_detail_movie_image"
         android:layout_alignEnd="@+id/widget_detail_movie_image"
+        android:layout_centerInParent="true"
         android:textSize="@dimen/widget_text_size"
         android:textColor="@color/widget_text">
     </TextView>
@@ -20,7 +23,9 @@
         android:id="@+id/widget_detail_movie_title_no_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textAlignment="center"
+        android:gravity="center"
         android:textSize="@dimen/widget_text_size"
         android:textColor="@color/widget_text">
     </TextView>
@@ -30,7 +35,7 @@
         android:contentDescription="@string/cd_movie_poster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_centerInParent="true">
     </ImageView>
 
 <!--

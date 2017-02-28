@@ -1,40 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/widget_background"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_layout_margin">
 
-    <LinearLayout
-        android:id="@+id/widget"
+    <TextView
+        android:id="@+id/widget_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="@dimen/widget_heading_size"
+        android:textColor="@color/widget_text"
+        android:paddingBottom="@dimen/widget_layout_margin"/>
+
+    <TextView
+        android:id="@+id/widget_movie_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="@dimen/widget_text_size"
+        android:textColor="@color/widget_text"
+        android:paddingBottom="@dimen/widget_layout_margin"/>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/widget_background"
-        android:orientation="vertical"
-        android:padding="4dp">
+        android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/widget_heading"
+            android:id="@+id/widget_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_alignStart="@+id/widget_movie_image"
+            android:layout_alignEnd="@+id/widget_movie_image"
+            android:layout_gravity="center"
             android:textAlignment="center"
-            android:textSize="@dimen/widget_heading_size"
-            android:textColor="@color/widget_text"/>
-
-        <TextView
-            android:id="@+id/widget_movie_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textAlignment="center"
-            android:textSize="@dimen/widget_text_size"
-            android:textColor="@color/widget_text"/>
+            android:gravity="center"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:text="@string/empty_grid"/>
 
         <ImageView
             android:id="@+id/widget_movie_image"
             android:contentDescription="@string/cd_movie_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foregroundGravity="center"/>
 
-    </LinearLayout>
-</FrameLayout>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -208,7 +208,8 @@ public class MainActivity extends AppCompatActivity {
                                     detailFragment.reInit();
                                 }
                             }
-                      }
+                        }
+                        updateWidgets();
                         return true;
                     }
                 }
@@ -239,6 +240,23 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, DetailFragment.newInstance(bundle, true))
                     .commit();
         }
+    }
+
+    public void updateWidgets () {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+
+        //Update widgets
+        Intent intent = new Intent(this, WidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
+                new ComponentName(this, WidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+        sendBroadcast(intent);
+
+        //Update detail widgets
+        int appWidgetIds2[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(this, WidgetDetailProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds2, R.id.widget_detail_list);
     }
 
     @Override
@@ -557,11 +575,7 @@ public class MainActivity extends AppCompatActivity {
             } catch(RemoteException | OperationApplicationException e){
                 Log.e(LOG_TAG, "Error applying batch insert all", e);
             } finally {
-                //Update detail widgets
-                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getContext());
-                int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                        new ComponentName(getContext(), WidgetDetailProvider.class));
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_detail_list);
+                ((MainActivity)getActivity()).updateWidgets();
             }
         }
 

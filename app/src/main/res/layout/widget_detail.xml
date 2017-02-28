@@ -13,29 +13,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
         android:textSize="@dimen/widget_heading_size"
         android:textColor="@color/widget_text"
         android:paddingBottom="@dimen/widget_layout_margin"/>
 
-    <FrameLayout
+    <ListView
+        android:id="@+id/widget_detail_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <ListView
-            android:id="@+id/widget_detail_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            tools:listitem="@layout/widget_detail_item"/>
-        <TextView
-            android:id="@+id/widget_detail_empty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:fontFamily="sans-serif-condensed"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:text="@string/empty_grid"/>
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        tools:listitem="@layout/widget_detail_item"/>
+    <TextView
+        android:id="@+id/widget_detail_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:text="@string/empty_grid"/>
 
 </LinearLayout>
