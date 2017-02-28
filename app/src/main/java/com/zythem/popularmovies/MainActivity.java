@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
 
     public int mViewPagerPosition = 0;
 
+    public MovieDataToPass mWidgetMovieInfo = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,6 +151,12 @@ public class MainActivity extends AppCompatActivity {
             // (res/layout-sw600dp). If this view is present, then the activity should be
             // in two-pane mode.
             mTwoPane = true;
+
+            // Handle detail widget intent to load the correct detail fragment
+            if (savedInstanceState == null) {
+                mWidgetMovieInfo = Parcels.unwrap(getIntent().getParcelableExtra("THE_DATA"));
+                Log.d("CHECK_THIS", "Info:" + mWidgetMovieInfo);
+            }
 
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -459,21 +467,25 @@ public class MainActivity extends AppCompatActivity {
                 MovieDataToPass movieInfo = new MovieDataToPass();
                 Cursor c = null;
                 try {
-                    c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
-                            null, null, null, null);
+                    if(((MainActivity)getActivity()).mWidgetMovieInfo != null) {
+                        ((MainActivity)getActivity()).loadTabletDetailFragment(((MainActivity)getActivity()).mWidgetMovieInfo);
+                    } else {
+                        c = getActivity().getContentResolver().query(MovieContentProvider.MostPopular.MOVIES,
+                                null, null, null, null);
 
-                    if(c != null) {
-                        c.moveToFirst();
+                        if(c != null) {
+                            c.moveToFirst();
 
-                        movieInfo.mTitle = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
-                        movieInfo.mImagepath = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
-                        movieInfo.mDate = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_DATE));
-                        movieInfo.mRating = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_RATING));
-                        movieInfo.mId = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_ID));
-                        movieInfo.mOverview = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
-                        movieInfo.mImagepath2 = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
+                            movieInfo.mTitle = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_TITLE));
+                            movieInfo.mImagepath = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH));
+                            movieInfo.mDate = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_DATE));
+                            movieInfo.mRating = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_RATING));
+                            movieInfo.mId = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_ID));
+                            movieInfo.mOverview = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_OVERVIEW));
+                            movieInfo.mImagepath2 = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
 
-                        ((MainActivity)getActivity()).loadTabletDetailFragment(movieInfo);
+                            ((MainActivity)getActivity()).loadTabletDetailFragment(movieInfo);
+                        }
                     }
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "Error ", e);
