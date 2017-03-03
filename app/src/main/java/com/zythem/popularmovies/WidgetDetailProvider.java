@@ -5,8 +5,10 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 public class WidgetDetailProvider extends AppWidgetProvider {
@@ -42,20 +44,6 @@ public class WidgetDetailProvider extends AppWidgetProvider {
         }
     }
 
-/*
-    @Override
-    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
-        super.onReceive(context, intent);
-//        if (SunshineSyncAdapter.ACTION_DATA_UPDATED.equals(intent.getAction())) {
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
-                    new ComponentName(context, getClass()));
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_detail_list);
-//        }
-    }
-*/
-
-
     /**
      * Sets the remote adapter used to fill in the list items
      *
@@ -67,17 +55,11 @@ public class WidgetDetailProvider extends AppWidgetProvider {
         views.setRemoteAdapter(R.id.widget_detail_list, intent);
     }
 
-/*
     @Override
-    public void onAppWidgetOptionsChanged(Context c, AppWidgetManager manager, int appWidgetId, Bundle newOptions) {
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        Log.d("CHECK_THIS", "Called: onAppWidgetOptionsChanged appWidgetId = " + appWidgetId);
 
-        Bundle options = manager.getAppWidgetOptions(appWidgetId);
-
-        int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-        int maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
-
-        int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-        int maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_detail_list);
     }
-*/
+
 }

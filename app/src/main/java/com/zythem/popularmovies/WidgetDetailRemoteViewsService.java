@@ -4,20 +4,19 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.parceler.Parcels;
+
+import java.io.IOException;
 
 public class WidgetDetailRemoteViewsService extends RemoteViewsService {
     private static final String LOG_TAG = WidgetDetailRemoteViewsService.class.getSimpleName();
@@ -32,6 +31,7 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
 
             @Override
             public void onCreate() {
+                //Get actual dimensions of the widget
                 mAppWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
                 mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                         AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -53,6 +53,8 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
                     mWidth = (int) (maxWidth * getResources().getDisplayMetrics().density);
                     mHeight = (int) ((maxWidth * 3 / 2) * getResources().getDisplayMetrics().density);
                 }
+
+                Log.d("CHECK_THIS", "Called: onCreate mAppWidgetId = " + mAppWidgetId + " mWidth = " + mWidth);
             }
 
             @Override
@@ -68,6 +70,9 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
                 Uri uriType = MovieContentProvider.MostPopular.MOVIES;
                 c = getContentResolver().query(uriType, null, null, null, null);
                 Binder.restoreCallingIdentity(identityToken);
+
+                // Recreate widget because this method is called in onAppWidgetOptionsChanged of WidgetDetailProvider
+                onCreate();
             }
 
             @Override
@@ -105,38 +110,27 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
 
                 // Add the data to the RemoteViews
 
+                Bitmap bitmap = null;
                 if (data.mImagepath != null && !data.mImagepath.isEmpty()) {
                     //Run Picasso on the main thread
-                    Handler uiHandler = new Handler(Looper.getMainLooper());
-                    uiHandler.post(new Runnable(){
-                        @Override
-                        public void run() {
-                            Target target = new Target() {
-                                @Override
-                                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                    views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
-                                }
-
-                                @Override
-                                public void onBitmapFailed(Drawable errorDrawable) {
-                                    views.setTextViewText(R.id.widget_detail_movie_title_no_image, data.mTitle);
-                                }
-
-                                @Override
-                                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                                    views.setTextViewText(R.id.widget_detail_movie_title, data.mTitle);
-                                }
-                            };
-
-                            Picasso.with(WidgetDetailRemoteViewsService.this)
-                                    .load(data.mImagepath)
-                                    .resize(mWidth, mHeight)
-                                    .into(target);
+                    try {
+                        bitmap = Picasso.with(WidgetDetailRemoteViewsService.this)
+                                .load(data.mImagepath)
+                                .resize(mWidth, mHeight)
+                                .get();
+                        if (bitmap != null) {
+                            views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
                         }
-                    });
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "Error retrieving image from " + data.mImagepath, e);
+                    }
                 }
 
-                final Intent fillInIntent = new Intent();
+                if (bitmap == null) {
+                    views.setTextViewText(R.id.widget_detail_movie_title_no_image, data.mTitle);
+                }
+
+                Intent fillInIntent = new Intent();
                 fillInIntent.putExtra("THE_DATA", Parcels.wrap(data));
                 views.setOnClickFillInIntent(R.id.widget_detail_item, fillInIntent);
                 return views;
