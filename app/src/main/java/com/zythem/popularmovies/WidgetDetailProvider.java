@@ -67,7 +67,7 @@ public class WidgetDetailProvider extends AppWidgetProvider {
 
 //        Intent updateIntent = new Intent(context, WidgetDetailRemoteViewsService.class);
 //        context.startService(updateIntent);
-        
+
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_detail_list);
     }
 

@@ -33,7 +33,6 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textAlignment="center"
-        android:textAppearance="?android:textAppearanceLarge"
         android:text="@string/empty_grid"/>
 
 </LinearLayout>

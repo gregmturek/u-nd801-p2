@@ -42,7 +42,6 @@
             android:layout_gravity="center"
             android:textAlignment="center"
             android:gravity="center"
-            android:textAppearance="?android:textAppearanceLarge"
             android:text="@string/empty_grid"/>
 
         <ImageView
