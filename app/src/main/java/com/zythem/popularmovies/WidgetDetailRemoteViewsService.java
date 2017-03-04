@@ -33,8 +33,12 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
             public void onCreate() {
                 //Get actual dimensions of the widget
                 mAppWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+/*
                 mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                         AppWidgetManager.INVALID_APPWIDGET_ID);
+*/
+
+                mAppWidgetId = Integer.valueOf(intent.getData().getSchemeSpecificPart());
 
                 Bundle options = mAppWidgetManager.getAppWidgetOptions(mAppWidgetId);
 
@@ -90,6 +94,8 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
 
             @Override
             public RemoteViews getViewAt(int position) {
+                Log.d("CHECK_THIS", "Called: getViewAt mAppWidgetId = " + mAppWidgetId + " mWidth = " + mWidth);
+
                 if (position == AdapterView.INVALID_POSITION ||
                         c == null || !c.moveToPosition(position)) {
                     return null;

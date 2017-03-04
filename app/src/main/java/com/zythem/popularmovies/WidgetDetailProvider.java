@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
@@ -51,7 +52,8 @@ public class WidgetDetailProvider extends AppWidgetProvider {
      */
     private void setRemoteAdapter(Context context, @NonNull final RemoteViews views, int appWidgetId/*, AppWidgetManager appWidgetManager*/) {
         Intent intent = new Intent(context, WidgetDetailRemoteViewsService.class);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+//        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(Uri.fromParts("content", String.valueOf(appWidgetId), null));
         views.setRemoteAdapter(R.id.widget_detail_list, intent);
     }
 
@@ -59,6 +61,13 @@ public class WidgetDetailProvider extends AppWidgetProvider {
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         Log.d("CHECK_THIS", "Called: onAppWidgetOptionsChanged appWidgetId = " + appWidgetId);
 
+//        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_detail);
+//        appWidgetManager.updateAppWidget(appWidgetId, views);
+//        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+
+//        Intent updateIntent = new Intent(context, WidgetDetailRemoteViewsService.class);
+//        context.startService(updateIntent);
+        
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_detail_list);
     }
 
