@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -44,7 +45,7 @@ public class WidgetIntentService extends IntentService {
 
         // Get cursor
         Uri uriType = MovieContentProvider.MostPopular.MOVIES;
-        Cursor c = getContentResolver().query(uriType, null, null, null, null);
+        Cursor c = getContentResolver().query(uriType, null, null, null, BaseColumns._ID + " ASC " + " LIMIT 20");
 
         // Get images setting
         SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

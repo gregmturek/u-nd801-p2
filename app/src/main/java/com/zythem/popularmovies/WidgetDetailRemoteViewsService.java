@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
@@ -79,7 +80,7 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
                 // that calls use our process and permission
                 final long identityToken = Binder.clearCallingIdentity();
                 Uri uriType = MovieContentProvider.MostPopular.MOVIES;
-                c = getContentResolver().query(uriType, null, null, null, null);
+                c = getContentResolver().query(uriType, null, null, null, BaseColumns._ID + " ASC " + " LIMIT 20");
                 Binder.restoreCallingIdentity(identityToken);
 
                 // Recreate widget because this method is called in onAppWidgetOptionsChanged of WidgetDetailProvider

@@ -25,7 +25,7 @@
     <ListView
         android:id="@+id/widget_detail_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:divider="@null"
         android:dividerHeight="@dimen/widget_layout_margin"
         tools:listitem="@layout/widget_detail_item"/>
