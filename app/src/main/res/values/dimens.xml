@@ -32,14 +32,17 @@
     <dimen name="text_divider_height">1dp</dimen>
     <dimen name="text_divider_margin">2dp</dimen>
 
-    <!-- Widget -->
+    <!-- Widgets -->
     <dimen name="widget_default_width">110dp</dimen>
-    <dimen name="widget_default_height">180dp</dimen>
+    <dimen name="widget_default_height">110dp</dimen>
+    <dimen name="widget_detail_default_height">180dp</dimen>
     <dimen name="widget_min_width">110dp</dimen>
     <dimen name="widget_min_height">110dp</dimen>
     <dimen name="widget_max_width">110dp</dimen>
     <dimen name="widget_max_height">110dp</dimen>
     <dimen name="widget_heading_size">18sp</dimen>
     <dimen name="widget_text_size">12sp</dimen>
-    <dimen name="widget_layout_margin">4dp</dimen>
+    <dimen name="widget_text_size_smaller">9sp</dimen>
+    <dimen name="widget_layout_margin">8dp</dimen>
+    <dimen name="widget_layout_half_margin">4dp</dimen>
 </resources>

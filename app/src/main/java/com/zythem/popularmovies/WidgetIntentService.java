@@ -5,10 +5,13 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -33,15 +36,20 @@ public class WidgetIntentService extends IntentService {
         final int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this,
                 WidgetProvider.class));
 
-        // Add the heading to the RemoteViews
         int layoutId = R.layout.widget;
         final RemoteViews views = new RemoteViews(this.getPackageName(), layoutId);
 
+        // Add the heading to the RemoteViews
         views.setTextViewText(R.id.widget_heading, getResources().getString(R.string.app_name));
 
         // Get cursor
         Uri uriType = MovieContentProvider.MostPopular.MOVIES;
         Cursor c = getContentResolver().query(uriType, null, null, null, null);
+
+        // Get images setting
+        SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
+        boolean images = sharedPref.getBoolean("images_switch", defaultValue);
 
         // Perform this loop procedure for each Today widget
         for (int appWidgetId : appWidgetIds) {
@@ -49,6 +57,8 @@ public class WidgetIntentService extends IntentService {
 
             views.setViewVisibility(R.id.widget_movie_image, View.INVISIBLE);
             views.setViewVisibility(R.id.widget_movie_title, View.INVISIBLE);
+            views.setTextViewTextSize(R.id.widget_empty, TypedValue.COMPLEX_UNIT_PX,
+                    getResources().getDimensionPixelSize(R.dimen.widget_text_size));
             views.setTextViewText(R.id.widget_empty, getResources().getString(R.string.empty_grid));
             views.setViewVisibility(R.id.widget_empty, View.VISIBLE);
 
@@ -84,16 +94,18 @@ public class WidgetIntentService extends IntentService {
                             bitmap = Picasso.with(WidgetIntentService.this)
                                     .load(data.mImagepath)
                                     .get();
-                            if (bitmap != null) {
-                                views.setImageViewBitmap(R.id.widget_movie_image, bitmap);
-                                views.setViewVisibility(R.id.widget_movie_image, View.VISIBLE);
-                            } else if (data.mTitle != null) {
-                                views.setTextViewText(R.id.widget_empty, data.mOverview);
-                                views.setViewVisibility(R.id.widget_empty, View.VISIBLE);
-                            }
                         } catch (IOException e) {
                             Log.e(LOG_TAG, "Error retrieving image from " + data.mImagepath, e);
                         }
+                    }
+                    if (bitmap != null && images) {
+                        views.setImageViewBitmap(R.id.widget_movie_image, bitmap);
+                        views.setViewVisibility(R.id.widget_movie_image, View.VISIBLE);
+                    } else {
+                        views.setTextViewTextSize(R.id.widget_empty, TypedValue.COMPLEX_UNIT_PX,
+                                getResources().getDimensionPixelSize(R.dimen.widget_text_size_smaller));
+                        views.setTextViewText(R.id.widget_empty, data.mOverview);
+                        views.setViewVisibility(R.id.widget_empty, View.VISIBLE);
                     }
 
                     // Create an Intent to launch specific movie
@@ -107,6 +119,7 @@ public class WidgetIntentService extends IntentService {
                             launchIntentSpecific, PendingIntent.FLAG_UPDATE_CURRENT);
                     views.setOnClickPendingIntent(R.id.widget_movie_image, pendingIntentSpecific);
                     views.setOnClickPendingIntent(R.id.widget_movie_title, pendingIntentSpecific);
+                    views.setOnClickPendingIntent(R.id.widget_empty, pendingIntentSpecific);
                 }
             }
 

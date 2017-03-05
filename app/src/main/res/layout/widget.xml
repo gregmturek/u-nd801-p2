@@ -29,7 +29,7 @@
         android:textColor="@color/widget_text"
         android:paddingBottom="@dimen/widget_layout_margin"/>
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -37,11 +37,8 @@
             android:id="@+id/widget_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/widget_movie_image"
-            android:layout_alignEnd="@+id/widget_movie_image"
             android:layout_gravity="center"
             android:textAlignment="center"
-            android:gravity="center"
             android:text="@string/empty_grid"/>
 
         <ImageView
@@ -51,6 +48,6 @@
             android:layout_height="match_parent"
             android:foregroundGravity="center"/>
 
-    </RelativeLayout>
+    </FrameLayout>
 
 </LinearLayout>

@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     android:background="@color/widget_background"
     android:orientation="vertical"
-    android:padding="@dimen/widget_layout_margin">
+    android:paddingStart="@dimen/widget_layout_half_margin"
+    android:paddingEnd="@dimen/widget_layout_half_margin"
+    android:paddingTop="@dimen/widget_layout_margin"
+    android:paddingBottom="@dimen/widget_layout_margin">
 
     <TextView
         android:id="@+id/widget_detail_heading"
@@ -24,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@null"
-        android:dividerHeight="0dp"
+        android:dividerHeight="@dimen/widget_layout_margin"
         tools:listitem="@layout/widget_detail_item"/>
     <TextView
         android:id="@+id/widget_detail_empty"
@@ -33,6 +36,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textAlignment="center"
+        android:textSize="@dimen/widget_text_size"
         android:text="@string/empty_grid"/>
 
 </LinearLayout>

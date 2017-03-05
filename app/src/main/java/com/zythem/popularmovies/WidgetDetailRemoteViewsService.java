@@ -2,11 +2,13 @@ package com.zythem.popularmovies;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
@@ -28,6 +30,7 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
             private Cursor c = null;
             private int mWidth, mHeight, mAppWidgetId;
             private AppWidgetManager mAppWidgetManager;
+            private boolean mImages;
 
             @Override
             public void onCreate() {
@@ -59,6 +62,10 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
                 }
 
                 Log.d("CHECK_THIS", "Called: onCreate mAppWidgetId = " + mAppWidgetId + " mWidth = " + mWidth);
+
+                SharedPreferences sharedPref =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                boolean defaultValue = getResources().getBoolean(R.bool.images_switch_default);
+                mImages = sharedPref.getBoolean("images_switch", defaultValue);
             }
 
             @Override
@@ -117,20 +124,22 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
                 // Add the data to the RemoteViews
 
                 Bitmap bitmap = null;
-                if (data.mImagepath != null && !data.mImagepath.isEmpty()) {
+                if (data.mImagepath != null && !data.mImagepath.isEmpty() && mImages) {
                     //Run Picasso on the main thread
                     try {
                         bitmap = Picasso.with(WidgetDetailRemoteViewsService.this)
                                 .load(data.mImagepath)
                                 .resize(mWidth, mHeight)
                                 .get();
-                        if (bitmap != null) {
-                            views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
-                        }
+//                        if (bitmap != null) {
+//                            views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
+//                        }
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "Error retrieving image from " + data.mImagepath, e);
                     }
                 }
+
+                views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
 
                 if (bitmap == null) {
                     views.setTextViewText(R.id.widget_detail_movie_title_no_image, data.mTitle);
