@@ -18,7 +18,6 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
-
     <style name="DetailTitleOverlayText">
         <item name="android:textColor">@color/title_text_color</item>
         <item name="android:textSize">@dimen/title_text_size</item>
