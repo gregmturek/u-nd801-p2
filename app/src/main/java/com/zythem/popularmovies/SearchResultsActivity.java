@@ -2,14 +2,22 @@ package com.zythem.popularmovies;
 
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -30,6 +38,10 @@ import java.util.Locale;
 
 public class SearchResultsActivity extends AppCompatActivity {
     private String[][] mMovieData;
+
+    private SearchAdapter mSearchAdapter;
+    private RecyclerView mRv;
+    private PreCachingGridLayoutManager mGlm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +68,33 @@ public class SearchResultsActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        int cardsInRowPortrait = getResources().getInteger(R.integer.cards_in_row_portrait);
+        int cardsInRowLandscape = getResources().getInteger(R.integer.cards_in_row_landscape);
+        int cardsInRow;
 
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            cardsInRow = cardsInRowPortrait;
+        }
+        else{
+            cardsInRow = cardsInRowLandscape;
+        }
+        if(MainActivity.mTwoPane) {
+            cardsInRow *= 2;
+        }
 
+        mRv = (RecyclerView) findViewById(R.id.rv_recycler_view_search);
+        mRv.setHasFixedSize(true);
+
+        mGlm = new PreCachingGridLayoutManager(getApplication(), cardsInRow);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowmanager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
+        int deviceWidth = displayMetrics.widthPixels;
+        int deviceHeight = displayMetrics.heightPixels;
+        int extraPixels = Math.max(deviceHeight, deviceWidth);
+        mGlm.setExtraLayoutSpace(extraPixels);
+
+        mRv.setLayoutManager(mGlm);
     }
 
     @Override
@@ -238,18 +275,43 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String[][] result) {
+            TextView emptyView = (TextView) findViewById(R.id.rv_grid_empty_search);
+
             if (result != null) {
+                emptyView.setVisibility(View.GONE);
+
                 mMovieData = result;
                 // New data is back from the server.  Hooray!
 //                storeAllData(mMovieData);
 //                showInitialTabletDetailFragment();
+
+                mSearchAdapter = new SearchAdapter(getApplication(), mMovieData, MainActivity.mTwoPane);
+                mRv.setAdapter(mSearchAdapter);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
             }
-            Log.d("CHECK_THIS", "Search Result from API:" + mMovieData[0][5]);
+
             dialog.dismiss();
         }
 
     }
 
+    public class PreCachingGridLayoutManager extends GridLayoutManager {
+        private int extraLayoutSpace;
+
+        public PreCachingGridLayoutManager(Context context, int spanCount) {
+            super(context, spanCount);
+        }
+
+        public void setExtraLayoutSpace(int extraLayoutSpace) {
+            this.extraLayoutSpace = extraLayoutSpace;
+        }
+
+        @Override
+        protected int getExtraLayoutSpace(RecyclerView.State state) {
+            return extraLayoutSpace;
+        }
+    }
 
 
 }
