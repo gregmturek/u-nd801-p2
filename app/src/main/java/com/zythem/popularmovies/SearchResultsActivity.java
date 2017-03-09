@@ -4,10 +4,12 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,7 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,14 +106,14 @@ public class SearchResultsActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to action_search your data somehow
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            String defaultValue = getResources().getString(R.string.number_of_movies_to_list_as_pages_default);
+            String pages = sharedPref.getString("number_of_movies_to_list_as_pages", defaultValue);
 
-            Toast.makeText(getApplication(), "Search: " + query, Toast.LENGTH_SHORT).show();
-            Log.d("CHECK_THIS", "Info:" + query);
+            String query = intent.getStringExtra(SearchManager.QUERY);
 
             FetchSearchTask fetchSearchTask = new FetchSearchTask();
-            fetchSearchTask.execute(query);
+            fetchSearchTask.execute(query, pages);
         }
     }
 
@@ -186,11 +187,9 @@ public class SearchResultsActivity extends AppCompatActivity {
             BufferedReader reader = null;
 
             // Will contain the raw JSON response as a string.
-//            String[] movieJsonStrs = new String[Integer.parseInt(params[1])];
-            // Set to just 1 page for now
-            String[] movieJsonStrs = new String[1];
+            String[] movieJsonStrs = new String[Integer.parseInt(params[1])];
 
-            for(int i = 0; i < movieJsonStrs.length; i++) {
+            for(int i = 0; i < Integer.parseInt(params[1]); i++) {
                 try {
                     // Construct the URL
                     final String MOVIE_BASE_URL =
