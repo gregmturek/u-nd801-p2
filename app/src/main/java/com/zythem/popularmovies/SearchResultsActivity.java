@@ -79,9 +79,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         else{
             cardsInRow = cardsInRowLandscape;
         }
+/*
         if(MainActivity.mTwoPane) {
-            cardsInRow *= 2;
+            cardsInRow /= 2;
         }
+*/
 
         mRv = (RecyclerView) findViewById(R.id.rv_recycler_view_search);
         mRv.setHasFixedSize(true);

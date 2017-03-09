@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -53,6 +51,7 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+/*
                     if(mTwoPane) {
                         MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
                         Bundle bundle = new Bundle();
@@ -62,11 +61,14 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
                                 .replace(R.id.fragment_container, DetailFragment.newInstance(bundle, true))
                                 .commit();
                     } else {
+*/
                         Intent intent = new Intent(v.getContext(), DetailActivity.class);
                         MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
                         intent.putExtra("THE_DATA", Parcels.wrap(movieInfo));
                         v.getContext().startActivity(intent);
+/*
                     }
+*/
                 }
             });
         }
