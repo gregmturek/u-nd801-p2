@@ -65,6 +65,7 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
                         Intent intent = new Intent(v.getContext(), DetailActivity.class);
                         MovieDataToPass movieInfo = (MovieDataToPass) mCardView.getTag();
                         intent.putExtra("THE_DATA", Parcels.wrap(movieInfo));
+                        intent.putExtra("THE_PARENT", "SEARCH");
                         v.getContext().startActivity(intent);
 /*
                     }

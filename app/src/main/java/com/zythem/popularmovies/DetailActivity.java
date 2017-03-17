@@ -98,6 +98,31 @@ public class DetailActivity extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(mReceiver);
     }
+
+    @Override
+    public Intent getParentActivityIntent() {
+        Intent i = null;
+
+        String parent = getIntent().getStringExtra("THE_PARENT");
+        // Here you need to do some logic to determine from which Activity you came.
+        // example: you could pass a variable through your Intent extras and check that.
+        if (parent != null && parent.equals("SEARCH")) {
+            i = new Intent(this, SearchResultsActivity.class);
+            // set any flags or extras that you need.
+            // If you are reusing the previous Activity (i.e. bringing it to the top
+            // without re-creating a new instance) set these flags:
+//            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            // if you are re-using the parent Activity you may not need to set any extras
+//            i.putExtra("someExtra", "whateverYouNeed");
+        } /*else { //
+            i = new Intent(this, MainActivity.class);
+            // same comments as above
+//            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//            i.putExtra("someExtra", "whateverYouNeed");
+        }
+*/
+        return i;
+    }
 }
 
 
