@@ -116,6 +116,7 @@ public class WidgetIntentService extends IntentService {
                             ? new Intent(this, DetailActivity.class)
                             : new Intent(this, MainActivity.class);
                     launchIntentSpecific.putExtra("THE_DATA", Parcels.wrap(data));
+                    launchIntentSpecific.putExtra("THE_PARENT", "WIDGET");
                     PendingIntent pendingIntentSpecific = PendingIntent.getActivity(this, appWidgetId,
                             launchIntentSpecific, PendingIntent.FLAG_UPDATE_CURRENT);
                     views.setOnClickPendingIntent(R.id.widget_movie_image, pendingIntentSpecific);

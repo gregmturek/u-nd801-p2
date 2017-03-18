@@ -148,6 +148,7 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
 
                 Intent fillInIntent = new Intent();
                 fillInIntent.putExtra("THE_DATA", Parcels.wrap(data));
+                fillInIntent.putExtra("THE_PARENT", "WIDGET");
                 views.setOnClickFillInIntent(R.id.widget_detail_item, fillInIntent);
                 return views;
             }

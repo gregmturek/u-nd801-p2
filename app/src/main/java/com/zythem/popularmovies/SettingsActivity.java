@@ -22,6 +22,8 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import static android.content.Intent.makeRestartActivityTask;
+
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -138,8 +140,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             if (!super.onMenuItemSelected(featureId, item)) {
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+                startActivity(makeRestartActivityTask(new Intent(this, MainActivity.class).getComponent()));
+/*
+                startActivity(new Intent(this, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+*/
             }
             return true;
         }
@@ -148,8 +153,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+        startActivity(makeRestartActivityTask(new Intent(this, MainActivity.class).getComponent()));
+/*
+        startActivity(new Intent(this, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+*/
     }
 
     /**

@@ -111,18 +111,29 @@ public class DetailActivity extends AppCompatActivity {
             // set any flags or extras that you need.
             // If you are reusing the previous Activity (i.e. bringing it to the top
             // without re-creating a new instance) set these flags:
+            // (The below is not needed because this activity is set to SINGLE_TOP in the manifest.)
 //            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             // if you are re-using the parent Activity you may not need to set any extras
 //            i.putExtra("someExtra", "whateverYouNeed");
-        } /*else { //
+/*
+        } else { // (This is not needed because null defaults to what is specified in the manifest.)
             i = new Intent(this, MainActivity.class);
             // same comments as above
-//            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//            i.putExtra("someExtra", "whateverYouNeed");
-        }
 */
+        }
         return i;
     }
+
+    @Override
+    public void onBackPressed() {
+        String parent = getIntent().getStringExtra("THE_PARENT");
+        if (parent != null && parent.equals("WIDGET")) {
+            startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 }
 
 
