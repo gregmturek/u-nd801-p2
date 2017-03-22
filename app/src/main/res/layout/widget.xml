@@ -12,19 +12,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textAlignment="center"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:textSize="@dimen/widget_heading_size"
-        android:textColor="@color/widget_text"
-        android:paddingBottom="@dimen/widget_layout_margin"/>
+        android:textColor="@color/widget_text"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_divider_height"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="@dimen/text_divider_margin"
+        android:layout_marginBottom="@dimen/widget_layout_margin"/>
 
     <TextView
         android:id="@+id/widget_movie_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textAlignment="center"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:textSize="@dimen/widget_text_size"
         android:textColor="@color/widget_text"
         android:paddingBottom="@dimen/widget_layout_margin"/>
@@ -37,8 +41,10 @@
             android:id="@+id/widget_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textAlignment="center"
+            android:layout_gravity="center_horizontal|top"
+            android:gravity="center"
+            android:textSize="@dimen/widget_text_size"
+            android:textColor="@color/widget_text"
             android:text="@string/empty_grid"/>
 
         <ImageView

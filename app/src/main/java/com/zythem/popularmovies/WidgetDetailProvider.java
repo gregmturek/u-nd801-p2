@@ -20,7 +20,7 @@ public class WidgetDetailProvider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_detail);
 
             // Set heading text
-            views.setTextViewText(R.id.widget_detail_heading, context.getResources().getString(R.string.app_name));
+            views.setTextViewText(R.id.widget_detail_heading, context.getResources().getString(R.string.tab_most_popular));
 
             // Create an Intent to launch MainActivity
             Intent intent = new Intent(context, MainActivity.class);

@@ -2,18 +2,18 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_detail_item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/widget_layout_half_margin"
-    android:paddingEnd="@dimen/widget_layout_half_margin">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/widget_detail_movie_title_no_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:textAlignment="center"
+        android:gravity="center"
+        android:layout_gravity="center"
         android:textSize="@dimen/widget_text_size"
-        android:textColor="@color/widget_text">
+        android:textColor="@color/widget_text"
+        android:background="@color/colorPrimary">
     </TextView>
 
     <ImageView
@@ -21,7 +21,7 @@
         android:contentDescription="@string/cd_movie_poster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center">
     </ImageView>
 
 </FrameLayout>

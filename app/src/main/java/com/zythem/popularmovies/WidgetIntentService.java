@@ -41,7 +41,7 @@ public class WidgetIntentService extends IntentService {
         final RemoteViews views = new RemoteViews(this.getPackageName(), layoutId);
 
         // Add the heading to the RemoteViews
-        views.setTextViewText(R.id.widget_heading, getResources().getString(R.string.app_name));
+        views.setTextViewText(R.id.widget_heading, getResources().getString(R.string.tab_most_popular));
 
         // Get cursor
         Uri uriType = MovieContentProvider.MostPopular.MOVIES;
@@ -62,6 +62,7 @@ public class WidgetIntentService extends IntentService {
                     getResources().getDimensionPixelSize(R.dimen.widget_text_size));
             views.setTextViewText(R.id.widget_empty, getResources().getString(R.string.empty_grid));
             views.setViewVisibility(R.id.widget_empty, View.VISIBLE);
+            views.setViewVisibility(R.id.widget_movie_title, View.GONE);
 
             // Get data from content provider
             if (c != null) {
@@ -81,6 +82,7 @@ public class WidgetIntentService extends IntentService {
                     data.mImagepath2 = c.getString(c.getColumnIndex(MostPopularColumns.MOVIE_IMAGEPATH_2));
 
                     views.setViewVisibility(R.id.widget_empty, View.INVISIBLE);
+                    views.setViewVisibility(R.id.widget_movie_title, View.VISIBLE);
 
                     // Add the data to the RemoteViews
                     if (data.mTitle != null) {
