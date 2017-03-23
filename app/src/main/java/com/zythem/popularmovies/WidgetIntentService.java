@@ -91,7 +91,7 @@ public class WidgetIntentService extends IntentService {
                     }
 
                     Bitmap bitmap = null;
-                    if (data.mImagepath != null && !data.mImagepath.isEmpty()) {
+                    if (data.mImagepath != null && !data.mImagepath.isEmpty() && images) {
                         //Run Picasso on the main thread
                         try {
                             bitmap = Picasso.with(WidgetIntentService.this)
@@ -101,7 +101,7 @@ public class WidgetIntentService extends IntentService {
                             Log.e(LOG_TAG, "Error retrieving image from " + data.mImagepath, e);
                         }
                     }
-                    if (bitmap != null && images) {
+                    if (bitmap != null) {
                         views.setImageViewBitmap(R.id.widget_movie_image, bitmap);
                         views.setViewVisibility(R.id.widget_movie_image, View.VISIBLE);
                     } else {

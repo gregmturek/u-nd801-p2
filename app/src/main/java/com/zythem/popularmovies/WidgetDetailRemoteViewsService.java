@@ -128,20 +128,17 @@ public class WidgetDetailRemoteViewsService extends RemoteViewsService {
                 if (data.mImagepath != null && !data.mImagepath.isEmpty() && mImages) {
                     //Run Picasso on the main thread
                     try {
+                        if (mWidth <= 0) {mWidth = 1;}
+                        if (mHeight <= 0) {mHeight = 1;}
                         bitmap = Picasso.with(WidgetDetailRemoteViewsService.this)
                                 .load(data.mImagepath)
                                 .resize(mWidth, mHeight)
                                 .get();
-//                        if (bitmap != null) {
-//                            views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
-//                        }
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "Error retrieving image from " + data.mImagepath, e);
                     }
                 }
-
                 views.setImageViewBitmap(R.id.widget_detail_movie_image, bitmap);
-
                 if (bitmap == null) {
                     views.setTextViewText(R.id.widget_detail_movie_title_no_image, data.mTitle);
                 }
