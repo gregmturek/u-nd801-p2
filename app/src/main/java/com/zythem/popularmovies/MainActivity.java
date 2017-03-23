@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -173,10 +174,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         setIntent(intent);
+
         String parent = getIntent().getStringExtra("THE_PARENT");
         if (parent != null && parent.equals("WIDGET")) {
-            startActivity(makeRestartActivityTask(new Intent(this, MainActivity.class).getComponent()));
+            Parcelable parcelable = getIntent().getParcelableExtra("THE_DATA");
+            if (parcelable != null) {
+                Intent newIntent = new Intent(this, MainActivity.class);
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                newIntent.putExtra("THE_PARENT", "WIDGET");
+                newIntent.putExtra("THE_DATA", parcelable);
+                startActivity(newIntent);
+            } else {
+                startActivity(makeRestartActivityTask(new Intent(this, MainActivity.class).getComponent()));
+            }
         }
     }
 
