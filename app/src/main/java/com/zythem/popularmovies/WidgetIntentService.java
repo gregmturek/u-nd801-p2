@@ -129,7 +129,8 @@ public class WidgetIntentService extends IntentService {
 
             // Create an Intent to launch MainActivity
             Intent launchIntent = new Intent(this, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
+            launchIntent.putExtra("THE_PARENT", "WIDGET");
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, appWidgetId, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setOnClickPendingIntent(R.id.widget_heading, pendingIntent);
 
             // Tell the AppWidgetManager to perform an update on the current app widget

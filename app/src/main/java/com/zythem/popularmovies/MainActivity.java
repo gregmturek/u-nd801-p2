@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.content.Intent.makeRestartActivityTask;
 import static com.zythem.popularmovies.MovieContentProvider.AUTHORITY;
 import static com.zythem.popularmovies.R.id.container;
 
@@ -166,6 +167,16 @@ public class MainActivity extends AppCompatActivity {
             // fragment transaction.
         } else {
             mTwoPane = false;
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String parent = getIntent().getStringExtra("THE_PARENT");
+        if (parent != null && parent.equals("WIDGET")) {
+            startActivity(makeRestartActivityTask(new Intent(this, MainActivity.class).getComponent()));
         }
     }
 

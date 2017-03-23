@@ -24,7 +24,8 @@ public class WidgetDetailProvider extends AppWidgetProvider {
 
             // Create an Intent to launch MainActivity
             Intent intent = new Intent(context, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            intent.putExtra("THE_PARENT", "WIDGET");
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setOnClickPendingIntent(R.id.widget_detail_heading, pendingIntent);
 
             // Set up the collection
@@ -36,7 +37,7 @@ public class WidgetDetailProvider extends AppWidgetProvider {
                     : new Intent(context, MainActivity.class);
             PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
                     .addNextIntentWithParentStack(clickIntentTemplate)
-                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    .getPendingIntent(appWidgetId, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setPendingIntentTemplate(R.id.widget_detail_list, clickPendingIntentTemplate);
             views.setEmptyView(R.id.widget_detail_list, R.id.widget_detail_empty);
 
